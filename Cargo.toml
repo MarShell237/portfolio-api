@@ -1,0 +1,21 @@
+[package]
+name = "portfolio-api"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+members = [
+  ".", 
+  "entities", 
+  # "migration"
+]
+
+[dependencies]
+entities = { path = "entities" }
+# migration = { path = "migration" }
+actix-web = "4.14.0"
+sea-orm = {version = "2.0.0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
+serde = {version = "1.0.228", features = ["derive"]}
+serde_json = "1.0.150"
+env_logger = "0.11.11"
+dotenv = "0.15.0"
