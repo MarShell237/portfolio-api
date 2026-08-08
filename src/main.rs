@@ -17,9 +17,11 @@ use sea_orm::{Database, DatabaseConnection};
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     env_logger::init();
+
     let db_pool: DatabaseConnection = Database::connect(&*DATABASE_URL)
         .await
         .expect("Database connection failed");
+
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(AppState {

@@ -4,6 +4,8 @@ use actix_web::{
 };
 use serde::{Serialize, Serializer};
 
+use crate::helpers::pagination_meta::PaginationMeta;
+
 #[derive(Serialize)]
 pub struct ApiResponse<T: Serialize> {
     pub success: bool,
@@ -12,6 +14,8 @@ pub struct ApiResponse<T: Serialize> {
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<T>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pagination: Option<PaginationMeta>,
 }
 
 fn serialize_status_code<S>(status: &StatusCode, serializer: S) -> Result<S::Ok, S::Error>
@@ -28,6 +32,21 @@ impl<T: Serialize> ApiResponse<T> {
             status: StatusCode::OK,
             message: message.into(),
             data,
+            pagination: None,
+        }
+    }
+
+    pub fn ok_with_pagination(
+        message: impl Into<String>,
+        data: T,
+        pagination: PaginationMeta,
+    ) -> Self {
+        Self {
+            success: true,
+            status: StatusCode::OK,
+            message: message.into(),
+            data: Some(data),
+            pagination: Some(pagination),
         }
     }
 
@@ -37,6 +56,7 @@ impl<T: Serialize> ApiResponse<T> {
             status: StatusCode::CREATED,
             message: message.into(),
             data,
+            pagination: None,
         }
     }
 
@@ -46,6 +66,7 @@ impl<T: Serialize> ApiResponse<T> {
             status: StatusCode::NOT_FOUND,
             message: message.into(),
             data: None,
+            pagination: None,
         }
     }
 
@@ -55,6 +76,7 @@ impl<T: Serialize> ApiResponse<T> {
             status: StatusCode::INTERNAL_SERVER_ERROR,
             message: message.into(),
             data: None,
+            pagination: None,
         }
     }
 
