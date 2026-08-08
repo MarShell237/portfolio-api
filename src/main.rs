@@ -4,7 +4,11 @@ mod dtos;
 mod handlers;
 mod helpers;
 
-use actix_web::{App, HttpServer, middleware::Logger, web};
+use actix_web::{
+    App, HttpServer,
+    middleware::{Compress, Logger},
+    web,
+};
 use config::{APP_PORT, APP_URL, DATABASE_URL};
 use helpers::app_state::AppState;
 use sea_orm::{Database, DatabaseConnection};
@@ -23,6 +27,7 @@ async fn main() -> std::io::Result<()> {
             }))
             .configure(api::config)
             .wrap(Logger::default())
+            .wrap(Compress::default())
     })
     .bind((APP_URL.as_str(), *APP_PORT))
     .expect("failled to load http server")

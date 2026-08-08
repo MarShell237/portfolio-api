@@ -25,29 +25,56 @@ impl<T: Serialize> ApiResponse<T> {
     pub fn ok(message: impl Into<String>, data: Option<T>) -> Self {
         Self {
             success: true,
+            status: StatusCode::OK,
             message: message.into(),
             data,
-            status: StatusCode::OK,
         }
     }
 
-    pub fn success(status: StatusCode, message: impl Into<String>, data: Option<T>) -> Self {
+    pub fn created(message: impl Into<String>, data: Option<T>) -> Self {
         Self {
             success: true,
+            status: StatusCode::CREATED,
             message: message.into(),
             data,
-            status,
         }
     }
 
-    pub fn error(status: StatusCode, message: impl Into<String>, data: Option<T>) -> Self {
+    pub fn not_found(message: impl Into<String>) -> Self {
         Self {
             success: false,
+            status: StatusCode::NOT_FOUND,
             message: message.into(),
-            data,
-            status,
+            data: None,
         }
     }
+
+    pub fn internal_server_error(message: impl Into<String>) -> Self {
+        Self {
+            success: false,
+            status: StatusCode::INTERNAL_SERVER_ERROR,
+            message: message.into(),
+            data: None,
+        }
+    }
+
+    // pub fn success(status: StatusCode, message: impl Into<String>, data: Option<T>) -> Self {
+    //     Self {
+    //         success: true,
+    //         message: message.into(),
+    //         data,
+    //         status,
+    //     }
+    // }
+
+    // pub fn error(status: StatusCode, message: impl Into<String>, data: Option<T>) -> Self {
+    //     Self {
+    //         success: false,
+    //         message: message.into(),
+    //         data,
+    //         status,
+    //     }
+    // }
 }
 
 impl<T: Serialize> Responder for ApiResponse<T> {

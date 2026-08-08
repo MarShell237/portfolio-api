@@ -1,15 +1,10 @@
-use actix_web::{HttpResponse, Responder};
+use actix_web::Responder;
 
-// #[get("/")]
+use crate::helpers::api_response::ApiResponse;
+
 pub async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-// #[post("/echo")]
-pub async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(format!("{} hi!", req_body))
-}
-
-pub async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
+    ApiResponse::ok(
+        "Hello, welcome to my portfolio API in Actix-web",
+        None::<()>,
+    )
 }

@@ -1,16 +1,12 @@
 use crate::handlers::{tag_handlers, test_handlers};
-use actix_web::web;
+use actix_web::web::{ServiceConfig, get, scope};
 
-pub fn config(config: &mut web::ServiceConfig) {
-    config.service(
-        web::scope("api/v2")
-            .route("", web::get().to(test_handlers::hello))
-            .route("manual", web::get().to(test_handlers::manual_hello))
-            .route("echo", web::post().to(test_handlers::echo))
-            .service(
-                web::scope("tags")
-                    .route("", web::get().to(tag_handlers::index))
-                    .route("{slug}", web::get().to(tag_handlers::show)),
-            ),
+pub fn config(config: &mut ServiceConfig) {
+    config.route("/", get().to(test_handlers::hello)).service(
+        scope("api/v2").service(
+            scope("tags")
+                .route("", get().to(tag_handlers::index))
+                .route("{slug}", get().to(tag_handlers::show)),
+        ),
     );
 }
