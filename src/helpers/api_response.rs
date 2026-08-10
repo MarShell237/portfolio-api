@@ -50,15 +50,15 @@ impl<T: Serialize> ApiResponse<T> {
         }
     }
 
-    pub fn created(message: impl Into<String>, data: Option<T>) -> Self {
-        Self {
-            success: true,
-            status: StatusCode::CREATED,
-            message: message.into(),
-            data,
-            pagination: None,
-        }
-    }
+    // pub fn created(message: impl Into<String>, data: Option<T>) -> Self {
+    //     Self {
+    //         success: true,
+    //         status: StatusCode::CREATED,
+    //         message: message.into(),
+    //         data,
+    //         pagination: None,
+    //     }
+    // }
 
     pub fn not_found(message: impl Into<String>) -> Self {
         Self {

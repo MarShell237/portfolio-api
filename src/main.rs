@@ -1,8 +1,10 @@
 mod api;
 mod config;
 mod dtos;
+mod errors;
 mod handlers;
 mod helpers;
+mod repositories;
 
 use actix_web::{
     App, HttpServer,
@@ -18,9 +20,7 @@ async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     env_logger::init();
 
-    let db_pool: DatabaseConnection = Database::connect(&*DATABASE_URL)
-        .await
-        .expect("Database connection failed");
+    let db_pool: DatabaseConnection = Database::connect(&*DATABASE_URL).await.unwrap();
 
     HttpServer::new(move || {
         App::new()
@@ -32,7 +32,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Compress::default())
     })
     .bind((APP_URL.as_str(), *APP_PORT))
-    .expect("failled to load http server")
+    .unwrap()
     .run()
     .await
 }

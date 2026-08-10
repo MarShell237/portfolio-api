@@ -1,15 +1,15 @@
 use entities::tags::Model as Tag;
 use sea_orm::entity::prelude::DateTime;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-#[derive(Deserialize)]
-pub struct TagRequest {
-    pub icon: Option<String>,
-    pub name: String,
-    pub slug: String,
-    pub color: String,
-    pub description: String,
-}
+// #[derive(Deserialize)]
+// pub struct TagRequest {
+//     pub icon: Option<String>,
+//     pub name: String,
+//     pub slug: String,
+//     pub color: String,
+//     pub description: String,
+// }
 
 #[derive(Serialize)]
 pub struct TagResponse {

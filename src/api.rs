@@ -9,6 +9,11 @@ pub fn config(config: &mut ServiceConfig) {
                     .route("", get().to(tag_handlers::index))
                     .route("{slug}", get().to(tag_handlers::show)),
             )
-            .service(scope("projects").route("", get().to(project_handlers::index))),
+            .service(
+                scope("projects")
+                    .route("", get().to(project_handlers::index))
+                    .route("pinned", get().to(project_handlers::pinned))
+                    .route("{slug}", get().to(project_handlers::show)),
+            ),
     );
 }
