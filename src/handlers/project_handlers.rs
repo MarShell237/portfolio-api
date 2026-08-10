@@ -66,3 +66,13 @@ pub async fn show(
         Some(ProjectResponse::from(project)),
     ))
 }
+
+pub async fn metrics(
+    project_id: Path<i64>,
+    app_state: Data<AppState>,
+) -> Result<impl Responder, AppError> {
+    Ok(ApiResponse::ok(
+        "Project metrics retrieved successfully",
+        Some(project_repositories::get_metrics(project_id.into_inner(), &app_state.db_pool).await?),
+    ))
+}

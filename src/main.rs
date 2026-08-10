@@ -1,6 +1,7 @@
 mod api;
 mod config;
 mod dtos;
+mod enums;
 mod errors;
 mod handlers;
 mod helpers;

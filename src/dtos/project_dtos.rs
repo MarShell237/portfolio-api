@@ -36,6 +36,14 @@ pub struct ProjectCollection {
     pub updated_at: Option<DateTime>,
 }
 
+#[derive(Serialize)]
+pub struct ProjectMetrics {
+    pub project_id: i64,
+    pub comments_count: u64,
+    pub likes_count: u64,
+    pub shares_count: u64,
+}
+
 impl From<Project> for ProjectResponse {
     fn from(project: Project) -> Self {
         Self {

@@ -13,7 +13,8 @@ pub fn config(config: &mut ServiceConfig) {
                 scope("projects")
                     .route("", get().to(project_handlers::index))
                     .route("pinned", get().to(project_handlers::pinned))
-                    .route("{slug}", get().to(project_handlers::show)),
+                    .route("{slug}", get().to(project_handlers::show))
+                    .route("{project_id}/metrics", get().to(project_handlers::metrics)),
             ),
     );
 }
