@@ -2,57 +2,35 @@ use actix_web::{
     Responder,
     web::{Data, Path, Query},
 };
-use entities::projects::{Column as ProjectColumn, Entity as Project};
-use sea_orm::{ColumnTrait, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 
+use crate::helpers::pagination_meta::PaginationParams;
 use crate::{
-    dtos::project_dtos::{ProjectCollection, ProjectResponse},
+    dtos::project_dtos::ProjectResponse,
     errors::AppError,
-    helpers::{
-        api_response::ApiResponse,
-        app_state::AppState,
-        pagination_meta::{PaginationMeta, PaginationParams},
-    },
+    helpers::{api_response::ApiResponse, app_state::AppState},
     repositories::project_repositories,
 };
 
-pub async fn index(app_state: Data<AppState>, query: Query<PaginationParams>) -> impl Responder {
-    let page = query.page.unwrap_or(1);
+pub async fn index(
+    app_state: Data<AppState>,
+    query: Query<PaginationParams>,
+) -> Result<impl Responder, AppError> {
+    let (project_response, meta) =
+        project_repositories::get_paginate_projects(&app_state.db_pool, query.page.unwrap_or(1))
+            .await?;
 
-    let paginator = Project::find()
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .order_by_desc(ProjectColumn::Id)
-        .paginate(&app_state.db_pool, 12);
-
-    match PaginationMeta::paginate(&paginator, page).await {
-        Ok((projects, meta)) => {
-            let projects_response: Vec<ProjectCollection> =
-                projects.into_iter().map(ProjectCollection::from).collect();
-            ApiResponse::ok_with_pagination(
-                "Projects retrieved successfully",
-                projects_response,
-                meta,
-            )
-        }
-        Err(_) => ApiResponse::internal_server_error("Failed to fetch projects"),
-    }
+    Ok(ApiResponse::ok_with_pagination(
+        "Projects retrieved successfully",
+        project_response,
+        meta,
+    ))
 }
 
-pub async fn pinned(app_state: Data<AppState>) -> impl Responder {
-    let projects = Project::find()
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .filter(ProjectColumn::IsPinned.eq(true))
-        .order_by_desc(ProjectColumn::Id)
-        .all(&app_state.db_pool)
-        .await
-        .unwrap();
-
-    let projects_response: Vec<ProjectCollection> =
-        projects.into_iter().map(ProjectCollection::from).collect();
-    ApiResponse::ok(
+pub async fn pinned(app_state: Data<AppState>) -> Result<impl Responder, AppError> {
+    Ok(ApiResponse::ok(
         "Projects pinned retrieved successfully",
-        Some(projects_response),
-    )
+        Some(project_repositories::get_pinned_projects(&app_state.db_pool).await?),
+    ))
 }
 
 pub async fn show(
@@ -74,5 +52,15 @@ pub async fn metrics(
     Ok(ApiResponse::ok(
         "Project metrics retrieved successfully",
         Some(project_repositories::get_metrics(project_id.into_inner(), &app_state.db_pool).await?),
+    ))
+}
+
+pub async fn adjacent(
+    project_id: Path<i64>,
+    app_state: Data<AppState>,
+) -> Result<impl Responder, AppError> {
+    Ok(ApiResponse::ok(
+        "Project adjacent retrieved succesfully",
+        Some(project_repositories::adjacent(project_id.into_inner(), &app_state.db_pool).await?),
     ))
 }

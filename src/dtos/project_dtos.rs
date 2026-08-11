@@ -44,6 +44,21 @@ pub struct ProjectMetrics {
     pub shares_count: u64,
 }
 
+#[derive(Serialize)]
+pub struct ProjectAdjacent {
+    pub id: i64,
+    pub title: String,
+    pub slug: String,
+    pub reading_time: i64,
+    pub excerpt: String,
+}
+
+#[derive(Serialize)]
+pub struct ProjectsAdjacentResponse {
+    pub prev: Option<ProjectAdjacent>,
+    pub next: Option<ProjectAdjacent>,
+}
+
 impl From<Project> for ProjectResponse {
     fn from(project: Project) -> Self {
         Self {
@@ -80,6 +95,18 @@ impl From<Project> for ProjectCollection {
             published_at: project.published_at,
             created_at: project.created_at,
             updated_at: project.updated_at,
+        }
+    }
+}
+
+impl From<Project> for ProjectAdjacent {
+    fn from(p: Project) -> Self {
+        Self {
+            id: p.id,
+            title: p.title,
+            slug: p.slug,
+            reading_time: p.reading_time,
+            excerpt: p.excerpt,
         }
     }
 }

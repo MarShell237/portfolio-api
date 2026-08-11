@@ -6,9 +6,9 @@ pub async fn find_by_slug_or_fail(
     db_pool: &DatabaseConnection,
     slug: &str,
 ) -> Result<TagModel, AppError> {
-    let tag = Tag::find()
+    Tag::find()
         .filter(TagColumn::Slug.eq(slug))
         .one(db_pool)
-        .await?;
-    tag.ok_or_else(|| AppError::not_found("Tag not found"))
+        .await?
+        .ok_or_else(|| AppError::not_found("Tag not found"))
 }

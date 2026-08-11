@@ -1,7 +1,9 @@
-use crate::dtos::tag_dtos::TagResponse;
-use crate::errors::AppError;
-use crate::helpers::{api_response::ApiResponse, app_state::AppState};
-use crate::repositories::tag_repositories;
+use crate::{
+    dtos::tag_dtos::TagResponse,
+    errors::AppError,
+    helpers::{api_response::ApiResponse, app_state::AppState},
+    repositories::tag_repositories,
+};
 use actix_web::{
     Responder,
     web::{Data, Path},
@@ -19,9 +21,10 @@ pub async fn show(
     slug: Path<String>,
     app_state: Data<AppState>,
 ) -> Result<impl Responder, AppError> {
-    let tag = tag_repositories::find_by_slug_or_fail(&app_state.db_pool, &slug).await?;
     Ok(ApiResponse::ok(
         "Tag details retrieved successfully",
-        Some(TagResponse::from(tag)),
+        Some(TagResponse::from(
+            tag_repositories::find_by_slug_or_fail(&app_state.db_pool, &slug).await?,
+        )),
     ))
 }
