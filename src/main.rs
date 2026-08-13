@@ -14,6 +14,7 @@ use actix_web::{
 };
 use config::{APP_PORT, APP_URL, DATABASE_URL};
 use helpers::app_state::AppState;
+use migrations::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
 
 #[actix_web::main]
@@ -22,6 +23,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let db_pool: DatabaseConnection = Database::connect(&*DATABASE_URL).await.unwrap();
+    Migrator::up(&db_pool, None).await.unwrap();
 
     HttpServer::new(move || {
         App::new()

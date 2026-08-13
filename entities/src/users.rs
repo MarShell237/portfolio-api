@@ -6,47 +6,21 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "users")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i64,
-    pub photo: Option<String>,
+    pub id: i32,
+    pub picture: Option<String>,
     pub name: String,
     #[sea_orm(unique)]
     pub email: String,
     #[sea_orm(unique)]
-    pub phone: Option<String>,
-    pub email_verified_at: Option<DateTime>,
+    pub phone: String,
+    pub email_verified_at: Option<String>,
     pub password: String,
-    pub remember_token: Option<String>,
     pub deleted_at: Option<DateTime>,
-    pub created_at: Option<DateTime>,
-    pub updated_at: Option<DateTime>,
+    pub created_at: DateTime,
+    pub updated_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "super::comments::Entity")]
-    Comments,
-    #[sea_orm(has_many = "super::likes::Entity")]
-    Likes,
-    #[sea_orm(has_many = "super::shares::Entity")]
-    Shares,
-}
-
-impl Related<super::comments::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Comments.def()
-    }
-}
-
-impl Related<super::likes::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Likes.def()
-    }
-}
-
-impl Related<super::shares::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Shares.def()
-    }
-}
+pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

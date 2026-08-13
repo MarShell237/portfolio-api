@@ -2,26 +2,4 @@
 
 pub mod prelude;
 
-pub mod cache;
-pub mod cache_locks;
-pub mod comments;
-pub mod failed_jobs;
-pub mod job_batches;
-pub mod jobs;
-pub mod likes;
-pub mod migrations;
-pub mod model_has_permissions;
-pub mod model_has_roles;
-pub mod notifications;
-pub mod password_reset_tokens;
-pub mod permissions;
-pub mod personal_access_tokens;
-pub mod posts;
-pub mod projects;
-pub mod role_has_permissions;
-pub mod roles;
-pub mod sessions;
-pub mod shares;
-pub mod taggables;
-pub mod tags;
 pub mod users;

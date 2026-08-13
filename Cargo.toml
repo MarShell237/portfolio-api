@@ -7,12 +7,12 @@ edition = "2024"
 members = [
   ".", 
   "entities", 
-  # "migration"
+  "migrations"
 ]
 
 [dependencies]
 entities = { path = "entities" }
-# migration = { path = "migration" }
+migrations = { path = "migrations" }
 actix-web = "4.14.0"
 sea-orm = {version = "2.0.0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
 serde = {version = "1.0.228", features = ["derive"]}
