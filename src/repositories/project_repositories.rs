@@ -47,8 +47,7 @@ pub async fn get_pinned_projects(
         .filter(ProjectColumn::IsPinned.eq(true))
         .order_by_desc(ProjectColumn::Id)
         .all(db_pool)
-        .await
-        .unwrap();
+        .await?;
 
     Ok(projects
         .into_iter()
