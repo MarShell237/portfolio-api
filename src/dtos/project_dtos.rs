@@ -15,8 +15,8 @@ pub struct ProjectResponse {
     pub views_count: i64,
     pub is_pinned: bool,
     pub published_at: Option<DateTime>,
-    pub created_at: Option<DateTime>,
-    pub updated_at: Option<DateTime>,
+    pub created_at: DateTime,
+    pub updated_at: DateTime,
 }
 
 #[derive(Serialize)]
@@ -32,8 +32,8 @@ pub struct ProjectCollection {
     pub views_count: i64,
     pub is_pinned: bool,
     pub published_at: Option<DateTime>,
-    pub created_at: Option<DateTime>,
-    pub updated_at: Option<DateTime>,
+    pub created_at: DateTime,
+    pub updated_at: DateTime,
 }
 
 #[derive(Serialize)]

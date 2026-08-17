@@ -7,7 +7,9 @@ pub fn config(config: &mut ServiceConfig) {
             .service(
                 scope("tags")
                     .route("", get().to(tag_handlers::index))
-                    .route("{slug}", get().to(tag_handlers::show)),
+                    .route("{slug}", get().to(tag_handlers::show))
+                    .route("{slug}/projects", get().to(tag_handlers::get_projects))
+                    .route("{slug}/posts", get().to(tag_handlers::get_posts)),
             )
             .service(
                 scope("projects")

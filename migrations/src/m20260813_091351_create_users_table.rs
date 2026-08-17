@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table("users")
                     .if_not_exists()
-                    .col(pk_auto("id"))
+                    .col(big_integer("id").auto_increment().primary_key())
                     .col(string("picture").null())
                     .col(string("name"))
                     .col(string("email").unique_key())

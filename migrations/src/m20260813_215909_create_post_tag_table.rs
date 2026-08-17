@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table("post_tag")
                     .if_not_exists()
-                    .col(pk_auto("id"))
+                    .col(big_integer("id").auto_increment().primary_key())
                     .col(big_integer("post_id"))
                     .foreign_key(
                         ForeignKey::create()

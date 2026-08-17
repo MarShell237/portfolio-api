@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table("permissions")
                     .if_not_exists()
-                    .col(pk_auto("id"))
+                    .col(big_integer("id").auto_increment().primary_key())
                     .col(string("name"))
                     .col(string("guard_name"))
                     .col(timestamp("created_at").extra("DEFAULT CURRENT_TIMESTAMP"))

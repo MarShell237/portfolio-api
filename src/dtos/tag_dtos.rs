@@ -1,6 +1,6 @@
 use entities::tags::Model as Tag;
 use sea_orm::entity::prelude::DateTime;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 // #[derive(Deserialize)]
 // pub struct TagRequest {
@@ -19,8 +19,13 @@ pub struct TagResponse {
     pub slug: String,
     pub color: String,
     pub description: String,
-    pub created_at: Option<DateTime>,
-    pub updated_at: Option<DateTime>,
+    pub created_at: DateTime,
+    pub updated_at: DateTime,
+}
+
+#[derive(Deserialize)]
+pub struct TagQuery {
+    pub r#type: Option<String>,
 }
 
 impl From<Tag> for TagResponse {

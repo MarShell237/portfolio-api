@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table("tags")
                     .if_not_exists()
-                    .col(pk_auto("id"))
+                    .col(big_integer("id").auto_increment().primary_key())
                     .col(string("icon").null())
                     .col(string("name").unique_key())
                     .col(string("slug").unique_key())
