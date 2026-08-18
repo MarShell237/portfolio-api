@@ -16,8 +16,7 @@ pub async fn index(
     query: Query<PaginationParams>,
 ) -> Result<impl Responder, AppError> {
     let (project_response, meta) =
-        project_repositories::get_paginate_projects(&app_state.db_pool, query.page.unwrap_or(1))
-            .await?;
+        project_repositories::get_paginate(&app_state.db_pool, query.page.unwrap_or(1)).await?;
 
     Ok(ApiResponse::ok_with_pagination(
         "Projects retrieved successfully",
@@ -29,7 +28,7 @@ pub async fn index(
 pub async fn pinned(app_state: Data<AppState>) -> Result<impl Responder, AppError> {
     Ok(ApiResponse::ok(
         "Projects pinned retrieved successfully",
-        Some(project_repositories::get_pinned_projects(&app_state.db_pool).await?),
+        Some(project_repositories::get_pinned(&app_state.db_pool).await?),
     ))
 }
 

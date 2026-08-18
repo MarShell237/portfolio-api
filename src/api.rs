@@ -1,4 +1,4 @@
-use crate::handlers::{hello_handler, project_handlers, tag_handlers};
+use crate::handlers::{hello_handler, post_handlers, project_handlers, tag_handlers};
 use actix_web::web::{ServiceConfig, get, scope};
 
 pub fn config(config: &mut ServiceConfig) {
@@ -21,6 +21,14 @@ pub fn config(config: &mut ServiceConfig) {
                         "{project_id}/adjacent",
                         get().to(project_handlers::adjacent),
                     ),
+            )
+            .service(
+                scope("posts")
+                    .route("", get().to(post_handlers::index))
+                    .route("pinned", get().to(post_handlers::pinned))
+                    .route("{slug}", get().to(post_handlers::show))
+                    .route("{post_id}/metrics", get().to(post_handlers::metrics))
+                    .route("{post_id}/adjacent", get().to(post_handlers::adjacent)),
             ),
     );
 }

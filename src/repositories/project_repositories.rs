@@ -20,7 +20,7 @@ use crate::{
     helpers::pagination_meta::PaginationMeta,
 };
 
-pub async fn get_paginate_projects(
+pub async fn get_paginate(
     db_pool: &DatabaseConnection,
     page: u64,
 ) -> Result<(Vec<ProjectCollection>, PaginationMeta), AppError> {
@@ -39,9 +39,7 @@ pub async fn get_paginate_projects(
     ))
 }
 
-pub async fn get_pinned_projects(
-    db_pool: &DatabaseConnection,
-) -> Result<Vec<ProjectCollection>, AppError> {
+pub async fn get_pinned(db_pool: &DatabaseConnection) -> Result<Vec<ProjectCollection>, AppError> {
     let projects = Project::find()
         .filter(ProjectColumn::PublishedAt.is_not_null())
         .filter(ProjectColumn::IsPinned.eq(true))

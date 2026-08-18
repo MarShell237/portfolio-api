@@ -34,6 +34,29 @@ pub struct PostCollection {
     pub updated_at: DateTime,
 }
 
+#[derive(Serialize)]
+pub struct PostMetrics {
+    pub project_id: i64,
+    pub comments_count: u64,
+    pub likes_count: u64,
+    pub shares_count: u64,
+}
+
+#[derive(Serialize)]
+pub struct PostAdjacent {
+    pub id: i64,
+    pub title: String,
+    pub slug: String,
+    pub reading_time: i64,
+    pub excerpt: String,
+}
+
+#[derive(Serialize)]
+pub struct PostsAdjacentResponse {
+    pub prev: Option<PostAdjacent>,
+    pub next: Option<PostAdjacent>,
+}
+
 impl From<Post> for PostResponse {
     fn from(post: Post) -> Self {
         Self {
@@ -68,6 +91,18 @@ impl From<Post> for PostCollection {
             published_at: post.published_at,
             created_at: post.created_at,
             updated_at: post.updated_at,
+        }
+    }
+}
+
+impl From<Post> for PostAdjacent {
+    fn from(p: Post) -> Self {
+        Self {
+            id: p.id,
+            title: p.title,
+            slug: p.slug,
+            reading_time: p.reading_time,
+            excerpt: p.excerpt,
         }
     }
 }
