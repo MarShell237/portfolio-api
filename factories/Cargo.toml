@@ -1,0 +1,10 @@
+[package]
+name = "factories"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+entities = { path = "../entities" }
+sea-orm = { version = "2.0.0" }
+fake = { version = "3.0", features = ["derive", "random_color"] }
+rand = "0.8"
