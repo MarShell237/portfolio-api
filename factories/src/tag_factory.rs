@@ -1,29 +1,26 @@
 use entities::tags as tag;
 use fake::faker::color::raw::*;
-use fake::faker::lorem::raw::*;
+use fake::faker::lorem::fr_fr::*;
 use fake::locales::FR_FR;
 use fake::{Dummy, Fake, Faker};
 use sea_orm::ActiveValue::{NotSet, Set};
 
 #[derive(Debug, Dummy)]
 pub struct TagFactoryDTO {
-    #[dummy(faker = "Words(FR_FR, 1..5)")]
+    #[dummy(faker = "Words(3..8)")]
     pub words: Vec<String>,
 
     #[dummy(faker = "HexColor(FR_FR)")]
     pub color: String,
 
-    #[dummy(faker = "Sentences(FR_FR, 1..3)")]
+    #[dummy(faker = "Sentences(2..5)")]
     pub description_sentences: Vec<String>,
 }
 
-// 2. Une structure simple sans traits complexes
 pub struct TagFactory;
 
 impl TagFactory {
-    /// Génère un ActiveModel prêt pour la base de données
     pub fn create() -> tag::ActiveModel {
-        // Génère des données aléatoires via le DTO
         let dto: TagFactoryDTO = Faker.fake();
 
         let name = dto.words.join(" ");

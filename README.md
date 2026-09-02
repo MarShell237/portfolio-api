@@ -33,3 +33,8 @@ sea-orm-cli migrate down -d seeders
 ```bash
 sea-orm-cli migrate generate []_seeder -d seeders
 ```
+
+- fresh database and seed
+```bash
+sea-orm-cli migrate fresh -d migrations ; sea-orm-cli migrate up -d seeders
+```
