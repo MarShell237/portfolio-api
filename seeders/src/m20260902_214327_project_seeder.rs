@@ -1,22 +1,29 @@
-use entities::tags as tag;
+use entities::projects as project;
 use sea_orm::EntityTrait;
 use sea_orm_migration::prelude::*;
 
-#[derive(DeriveMigrationName)]
 pub struct Migration;
+
+impl MigrationName for Migration {
+    fn name(&self) -> &str {
+        "m20260902_214327_project_seeder"
+    }
+}
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        let tags: Vec<tag::ActiveModel> = (0..10).map(|_| factories::tag_factory::create()).collect();
-        tag::Entity::insert_many(tags).exec(db).await?;
+        let projects: Vec<project::ActiveModel> = (0..8)
+            .map(|_| factories::project_factory::create())
+            .collect();
+        project::Entity::insert_many(projects).exec(db).await?;
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        tag::Entity::delete_many().exec(db).await?;
+        project::Entity::delete_many().exec(db).await?;
         Ok(())
     }
 }

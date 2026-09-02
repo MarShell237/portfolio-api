@@ -5,40 +5,31 @@ use fake::locales::FR_FR;
 use fake::{Dummy, Fake, Faker};
 use sea_orm::ActiveValue::{NotSet, Set};
 
-#[derive(Debug, Dummy)]
-pub struct TagFactoryDTO {
-    #[dummy(faker = "Words(3..8)")]
-    pub words: Vec<String>,
+#[derive(Dummy)]
+pub struct TagFactory {
+    #[dummy(faker = "Words(3..5)")]
+    pub name: Vec<String>,
 
     #[dummy(faker = "HexColor(FR_FR)")]
     pub color: String,
 
-    #[dummy(faker = "Sentences(2..5)")]
-    pub description_sentences: Vec<String>,
+    #[dummy(faker = "Sentences(4..8)")]
+    pub description: Vec<String>,
 }
 
-pub struct TagFactory;
+pub fn create() -> tag::ActiveModel {
+    let tag_factory: TagFactory = Faker.fake();
 
-impl TagFactory {
-    pub fn create() -> tag::ActiveModel {
-        let dto: TagFactoryDTO = Faker.fake();
-
-        let name = dto.words.join(" ");
-        let slug = name
-            .to_lowercase()
-            .replace(['\'', '"'], "")
-            .replace(' ', "-");
-        let description = dto.description_sentences.join(" ");
-
-        tag::ActiveModel {
-            id: NotSet,
-            name: Set(name),
-            slug: Set(slug),
-            color: Set(dto.color),
-            description: Set(description),
-            icon: NotSet,
-            created_at: NotSet,
-            updated_at: NotSet,
-        }
+    let name = tag_factory.name.join(" ");
+    let slug = slug::slugify(&name);
+    tag::ActiveModel {
+        id: NotSet,
+        name: Set(name),
+        slug: Set(slug),
+        color: Set(tag_factory.color),
+        description: Set(tag_factory.description.join(" ")),
+        icon: NotSet,
+        created_at: NotSet,
+        updated_at: NotSet,
     }
 }
