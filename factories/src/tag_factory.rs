@@ -1,4 +1,4 @@
-use entities::tags as tag;
+use entities::tags;
 use fake::faker::color::raw::*;
 use fake::faker::lorem::fr_fr::*;
 use fake::locales::FR_FR;
@@ -17,12 +17,12 @@ pub struct TagFactory {
     pub description: Vec<String>,
 }
 
-pub fn create() -> tag::ActiveModel {
+pub fn create() -> tags::ActiveModel {
     let tag_factory: TagFactory = Faker.fake();
 
     let name = tag_factory.name.join(" ");
     let slug = slug::slugify(&name);
-    tag::ActiveModel {
+    tags::ActiveModel {
         id: NotSet,
         name: Set(name),
         slug: Set(slug),

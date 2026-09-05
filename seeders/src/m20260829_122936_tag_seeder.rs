@@ -1,4 +1,4 @@
-use entities::tags as tag;
+use entities::tags;
 use sea_orm::EntityTrait;
 use sea_orm_migration::prelude::*;
 
@@ -9,15 +9,15 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        let tags: Vec<tag::ActiveModel> =
+        let tags: Vec<tags::ActiveModel> =
             (0..30).map(|_| factories::tag_factory::create()).collect();
-        tag::Entity::insert_many(tags).exec(db).await?;
+        tags::Entity::insert_many(tags).exec(db).await?;
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        tag::Entity::delete_many().exec(db).await?;
+        tags::Entity::delete_many().exec(db).await?;
         Ok(())
     }
 }

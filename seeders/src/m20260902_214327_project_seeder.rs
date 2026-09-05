@@ -1,4 +1,4 @@
-use entities::projects as project;
+use entities::projects;
 use sea_orm::EntityTrait;
 use sea_orm_migration::prelude::*;
 
@@ -14,16 +14,16 @@ impl MigrationName for Migration {
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        let projects: Vec<project::ActiveModel> = (0..8)
+        let projects: Vec<projects::ActiveModel> = (0..8)
             .map(|_| factories::project_factory::create())
             .collect();
-        project::Entity::insert_many(projects).exec(db).await?;
+        projects::Entity::insert_many(projects).exec(db).await?;
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        project::Entity::delete_many().exec(db).await?;
+        projects::Entity::delete_many().exec(db).await?;
         Ok(())
     }
 }

@@ -1,11 +1,5 @@
 use crate::errors::AppError;
-use entities::{
-    post_tag::Column as PostTagColumn,
-    posts::{Column as PostColumn, Entity as Post, Model as PostModel},
-    project_tag::Column as ProjectTagColumn,
-    projects::{Column as ProjectColumn, Entity as Project, Model as ProjectModel},
-    tags::{Column as TagColumn, Entity as Tag, Model as TagModel, Relation as TagRelation},
-};
+use entities::{post_tag, posts, project_tag, projects, tags};
 use migrations::SimpleExpr;
 use sea_orm::{
     ColumnTrait, DatabaseConnection, EntityTrait, JoinType, Order, QueryFilter, QueryOrder,
@@ -13,16 +7,16 @@ use sea_orm::{
 };
 
 // a effacer
-pub async fn all(db_pool: &DatabaseConnection) -> Result<Vec<TagModel>, AppError> {
-    Ok(Tag::find().all(db_pool).await?)
+pub async fn all(db_pool: &DatabaseConnection) -> Result<Vec<tags::Model>, AppError> {
+    Ok(tags::Entity::find().all(db_pool).await?)
 }
 
 pub async fn find_by_slug_or_fail(
     db_pool: &DatabaseConnection,
     slug: &str,
-) -> Result<TagModel, AppError> {
-    Tag::find()
-        .filter(TagColumn::Slug.eq(slug))
+) -> Result<tags::Model, AppError> {
+    tags::Entity::find()
+        .filter(tags::Column::Slug.eq(slug))
         .one(db_pool)
         .await?
         .ok_or_else(|| AppError::not_found("Tag not found"))
@@ -31,21 +25,21 @@ pub async fn find_by_slug_or_fail(
 pub async fn find_by_type_with_count(
     db_pool: &DatabaseConnection,
     tag_type: &str,
-) -> Result<Vec<TagModel>, AppError> {
-    let mut query = Tag::find();
+) -> Result<Vec<tags::Model>, AppError> {
+    let mut query = tags::Entity::find();
 
     match tag_type {
         "posts" => {
             query = query
-                .join(JoinType::InnerJoin, TagRelation::PostTag.def())
-                .group_by(TagColumn::Id)
-                .order_by_desc(SimpleExpr::from(PostTagColumn::PostId.count()));
+                .join(JoinType::InnerJoin, tags::Relation::PostTag.def())
+                .group_by(tags::Column::Id)
+                .order_by_desc(SimpleExpr::from(post_tag::Column::PostId.count()));
         }
         "projects" => {
             query = query
-                .join(JoinType::InnerJoin, TagRelation::ProjectTag.def())
-                .group_by(TagColumn::Id)
-                .order_by_desc(SimpleExpr::from(ProjectTagColumn::ProjectId.count()));
+                .join(JoinType::InnerJoin, tags::Relation::ProjectTag.def())
+                .group_by(tags::Column::Id)
+                .order_by_desc(SimpleExpr::from(project_tag::Column::ProjectId.count()));
         }
         _ => {
             return Err(AppError::not_found(
@@ -60,10 +54,10 @@ pub async fn find_by_type_with_count(
 pub async fn find_projects_by_tag_slug(
     db_pool: &DatabaseConnection,
     slug: &str,
-) -> Result<Vec<ProjectModel>, AppError> {
+) -> Result<Vec<projects::Model>, AppError> {
     find_by_slug_or_fail(db_pool, slug).await?;
 
-    Project::find()
+    projects::Entity::find()
         .join(
             JoinType::InnerJoin,
             entities::project_tag::Relation::Projects.def().rev(),
@@ -72,9 +66,9 @@ pub async fn find_projects_by_tag_slug(
             JoinType::InnerJoin,
             entities::project_tag::Relation::Tags.def(),
         )
-        .filter(TagColumn::Slug.eq(slug))
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .order_by(ProjectColumn::Id, Order::Desc)
+        .filter(tags::Column::Slug.eq(slug))
+        .filter(projects::Column::PublishedAt.is_not_null())
+        .order_by(projects::Column::Id, Order::Desc)
         .all(db_pool)
         .await
         .map_err(AppError::from)
@@ -83,10 +77,10 @@ pub async fn find_projects_by_tag_slug(
 pub async fn find_posts_by_tag_slug(
     db_pool: &DatabaseConnection,
     slug: &str,
-) -> Result<Vec<PostModel>, AppError> {
+) -> Result<Vec<posts::Model>, AppError> {
     find_by_slug_or_fail(db_pool, slug).await?;
 
-    Post::find()
+    posts::Entity::find()
         .join(
             JoinType::InnerJoin,
             entities::post_tag::Relation::Posts.def().rev(),
@@ -95,9 +89,9 @@ pub async fn find_posts_by_tag_slug(
             JoinType::InnerJoin,
             entities::post_tag::Relation::Tags.def(),
         )
-        .filter(TagColumn::Slug.eq(slug))
-        .filter(PostColumn::PublishedAt.is_not_null())
-        .order_by(PostColumn::Id, Order::Desc)
+        .filter(tags::Column::Slug.eq(slug))
+        .filter(posts::Column::PublishedAt.is_not_null())
+        .order_by(posts::Column::Id, Order::Desc)
         .all(db_pool)
         .await
         .map_err(AppError::from)

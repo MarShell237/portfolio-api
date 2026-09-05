@@ -1,9 +1,4 @@
-use entities::{
-    comments::{Column as CommentColumn, Entity as Comment},
-    likes::{Column as LikeColumn, Entity as Like},
-    projects::{Column as ProjectColumn, Entity as Project, Model as ProjectModel},
-    shares::{Column as ShareColumn, Entity as Share},
-};
+use entities::{comments, likes, projects, shares};
 use sea_orm::{
     ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
 };
@@ -24,9 +19,9 @@ pub async fn get_paginate(
     db_pool: &DatabaseConnection,
     page: u64,
 ) -> Result<(Vec<ProjectCollection>, PaginationMeta), AppError> {
-    let paginator = Project::find()
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .order_by_desc(ProjectColumn::Id)
+    let paginator = projects::Entity::find()
+        .filter(projects::Column::PublishedAt.is_not_null())
+        .order_by_desc(projects::Column::Id)
         .paginate(db_pool, 12);
 
     let (projects, meta) = PaginationMeta::paginate(&paginator, page).await?;
@@ -40,10 +35,10 @@ pub async fn get_paginate(
 }
 
 pub async fn get_pinned(db_pool: &DatabaseConnection) -> Result<Vec<ProjectCollection>, AppError> {
-    let projects = Project::find()
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .filter(ProjectColumn::IsPinned.eq(true))
-        .order_by_desc(ProjectColumn::Id)
+    let projects = projects::Entity::find()
+        .filter(projects::Column::PublishedAt.is_not_null())
+        .filter(projects::Column::IsPinned.eq(true))
+        .order_by_desc(projects::Column::Id)
         .all(db_pool)
         .await?;
 
@@ -56,10 +51,10 @@ pub async fn get_pinned(db_pool: &DatabaseConnection) -> Result<Vec<ProjectColle
 pub async fn find_by_slug_or_fail(
     db: &DatabaseConnection,
     slug: &str,
-) -> Result<ProjectModel, AppError> {
-    Project::find()
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .filter(ProjectColumn::Slug.eq(slug))
+) -> Result<projects::Model, AppError> {
+    projects::Entity::find()
+        .filter(projects::Column::PublishedAt.is_not_null())
+        .filter(projects::Column::Slug.eq(slug))
         .one(db)
         .await?
         .ok_or_else(|| AppError::not_found("Project not found"))
@@ -68,10 +63,10 @@ pub async fn find_by_slug_or_fail(
 pub async fn find_or_fail(
     project_id: i64,
     db_pool: &DatabaseConnection,
-) -> Result<ProjectModel, AppError> {
-    Project::find()
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .filter(ProjectColumn::Id.eq(project_id))
+) -> Result<projects::Model, AppError> {
+    projects::Entity::find()
+        .filter(projects::Column::PublishedAt.is_not_null())
+        .filter(projects::Column::Id.eq(project_id))
         .one(db_pool)
         .await?
         .ok_or_else(|| AppError::not_found("Project not found"))
@@ -81,21 +76,21 @@ pub async fn get_metrics(
     project_id: i64,
     db_pool: &DatabaseConnection,
 ) -> Result<ProjectMetrics, AppError> {
-    let comments_count = Comment::find()
-        .filter(CommentColumn::CommentableId.eq(project_id))
-        .filter(CommentColumn::CommentableType.eq(CommentableEnum::Project))
+    let comments_count = comments::Entity::find()
+        .filter(comments::Column::CommentableId.eq(project_id))
+        .filter(comments::Column::CommentableType.eq(CommentableEnum::Project))
         .count(db_pool)
         .await?;
 
-    let likes_count = Like::find()
-        .filter(LikeColumn::LikeableId.eq(project_id))
-        .filter(LikeColumn::LikeableType.eq(LikeableEnum::Project))
+    let likes_count = likes::Entity::find()
+        .filter(likes::Column::LikeableId.eq(project_id))
+        .filter(likes::Column::LikeableType.eq(LikeableEnum::Project))
         .count(db_pool)
         .await?;
 
-    let shares_count = Share::find()
-        .filter(ShareColumn::SharerId.eq(project_id))
-        .filter(ShareColumn::ShareableType.eq(ShareableEnum::Project))
+    let shares_count = shares::Entity::find()
+        .filter(shares::Column::SharerId.eq(project_id))
+        .filter(shares::Column::ShareableType.eq(ShareableEnum::Project))
         .count(db_pool)
         .await?;
 
@@ -113,17 +108,17 @@ pub async fn adjacent(
 ) -> Result<ProjectsAdjacentResponse, AppError> {
     let project = find_or_fail(project_id, db_pool).await?;
 
-    let prev_model = Project::find()
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .filter(ProjectColumn::PublishedAt.lt(project.published_at))
-        .order_by_desc(ProjectColumn::PublishedAt)
+    let prev_model = projects::Entity::find()
+        .filter(projects::Column::PublishedAt.is_not_null())
+        .filter(projects::Column::PublishedAt.lt(project.published_at))
+        .order_by_desc(projects::Column::PublishedAt)
         .one(db_pool)
         .await?;
 
-    let next_model = Project::find()
-        .filter(ProjectColumn::PublishedAt.is_not_null())
-        .filter(ProjectColumn::PublishedAt.gt(project.published_at))
-        .order_by_asc(ProjectColumn::PublishedAt)
+    let next_model = projects::Entity::find()
+        .filter(projects::Column::PublishedAt.is_not_null())
+        .filter(projects::Column::PublishedAt.gt(project.published_at))
+        .order_by_asc(projects::Column::PublishedAt)
         .one(db_pool)
         .await?;
 

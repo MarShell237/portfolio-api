@@ -1,4 +1,4 @@
-use entities::projects as project;
+use entities::projects;
 use fake::faker::lorem::fr_fr::*;
 use fake::{Dummy, Fake, Faker};
 use sea_orm::ActiveValue::{NotSet, Set};
@@ -22,13 +22,13 @@ pub struct ProjectFactory {
     pub published_at: Option<DateTime>,
 }
 
-pub fn create() -> project::ActiveModel {
+pub fn create() -> projects::ActiveModel {
     let project_factory: ProjectFactory = Faker.fake();
 
     let title = project_factory.title.join(" ");
     let slug = slug::slugify(&title);
 
-    project::ActiveModel {
+    projects::ActiveModel {
         id: NotSet,
         cover_image: NotSet,
         title: Set(title),

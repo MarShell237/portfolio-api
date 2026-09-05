@@ -1,4 +1,4 @@
-use entities::tags::Model as Tag;
+use entities::tags;
 use sea_orm::entity::prelude::DateTime;
 use serde::{Deserialize, Serialize};
 
@@ -28,8 +28,8 @@ pub struct TagQuery {
     pub r#type: Option<String>,
 }
 
-impl From<Tag> for TagResponse {
-    fn from(tag: Tag) -> Self {
+impl From<tags::Model> for TagResponse {
+    fn from(tag: tags::Model) -> Self {
         Self {
             id: tag.id,
             icon: tag.icon,

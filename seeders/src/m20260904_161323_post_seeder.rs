@@ -1,4 +1,4 @@
-use entities::posts as post;
+use entities::posts;
 use sea_orm::EntityTrait;
 use sea_orm_migration::prelude::*;
 
@@ -14,15 +14,15 @@ impl MigrationName for Migration {
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        let posts: Vec<post::ActiveModel> =
+        let posts: Vec<posts::ActiveModel> =
             (0..8).map(|_| factories::post_factory::create()).collect();
-        post::Entity::insert_many(posts).exec(db).await?;
+        posts::Entity::insert_many(posts).exec(db).await?;
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        post::Entity::delete_many().exec(db).await?;
+        posts::Entity::delete_many().exec(db).await?;
         Ok(())
     }
 }

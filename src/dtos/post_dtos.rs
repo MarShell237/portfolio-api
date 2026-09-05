@@ -1,4 +1,4 @@
-use entities::posts::Model as Post;
+use entities::posts;
 use sea_orm::prelude::DateTime;
 use serde::Serialize;
 
@@ -57,8 +57,8 @@ pub struct PostsAdjacentResponse {
     pub next: Option<PostAdjacent>,
 }
 
-impl From<Post> for PostResponse {
-    fn from(post: Post) -> Self {
+impl From<posts::Model> for PostResponse {
+    fn from(post: posts::Model) -> Self {
         Self {
             id: post.id,
             cover_image: post.cover_image,
@@ -76,8 +76,8 @@ impl From<Post> for PostResponse {
     }
 }
 
-impl From<Post> for PostCollection {
-    fn from(post: Post) -> Self {
+impl From<posts::Model> for PostCollection {
+    fn from(post: posts::Model) -> Self {
         Self {
             id: post.id,
             cover_image: post.cover_image,
@@ -95,8 +95,8 @@ impl From<Post> for PostCollection {
     }
 }
 
-impl From<Post> for PostAdjacent {
-    fn from(p: Post) -> Self {
+impl From<posts::Model> for PostAdjacent {
+    fn from(p: posts::Model) -> Self {
         Self {
             id: p.id,
             title: p.title,

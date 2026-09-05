@@ -1,4 +1,4 @@
-use entities::projects::Model as Project;
+use entities::projects;
 use sea_orm::entity::prelude::DateTime;
 use serde::Serialize;
 
@@ -59,8 +59,8 @@ pub struct ProjectsAdjacentResponse {
     pub next: Option<ProjectAdjacent>,
 }
 
-impl From<Project> for ProjectResponse {
-    fn from(project: Project) -> Self {
+impl From<projects::Model> for ProjectResponse {
+    fn from(project: projects::Model) -> Self {
         Self {
             id: project.id,
             cover_image: project.cover_image,
@@ -79,8 +79,8 @@ impl From<Project> for ProjectResponse {
     }
 }
 
-impl From<Project> for ProjectCollection {
-    fn from(project: Project) -> Self {
+impl From<projects::Model> for ProjectCollection {
+    fn from(project: projects::Model) -> Self {
         Self {
             id: project.id,
             cover_image: project.cover_image,
@@ -99,8 +99,8 @@ impl From<Project> for ProjectCollection {
     }
 }
 
-impl From<Project> for ProjectAdjacent {
-    fn from(p: Project) -> Self {
+impl From<projects::Model> for ProjectAdjacent {
+    fn from(p: projects::Model) -> Self {
         Self {
             id: p.id,
             title: p.title,

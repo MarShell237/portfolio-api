@@ -1,4 +1,4 @@
-use entities::posts as post;
+use entities::posts;
 use fake::faker::lorem::fr_fr::*;
 use fake::{Dummy, Fake, Faker};
 use sea_orm::ActiveValue::{NotSet, Set};
@@ -22,13 +22,13 @@ pub struct PostFactory {
     pub published_at: Option<DateTime>,
 }
 
-pub fn create() -> post::ActiveModel {
+pub fn create() -> posts::ActiveModel {
     let post_factory: PostFactory = Faker.fake();
 
     let title = post_factory.title.join(" ");
     let slug = slug::slugify(&title);
 
-    post::ActiveModel {
+    posts::ActiveModel {
         id: NotSet,
         cover_image: NotSet,
         title: Set(title),
