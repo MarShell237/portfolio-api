@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "comments")]
 pub struct Model {
@@ -16,32 +17,23 @@ pub struct Model {
     pub content: String,
     pub created_at: DateTime,
     pub updated_at: DateTime,
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
     #[sea_orm(
-        belongs_to = "Entity",
-        from = "Column::ParentId",
-        to = "Column::Id",
+        self_ref,
+        relation_enum = "SelfRef",
+        from = "parent_id",
+        to = "id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    SelfRef,
+    pub comments: BelongsTo<Option<Entity>>,
     #[sea_orm(
-        belongs_to = "super::users::Entity",
-        from = "Column::CommenterId",
-        to = "super::users::Column::Id",
+        belongs_to,
+        from = "commenter_id",
+        to = "id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    Users,
-}
-
-impl Related<super::users::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Users.def()
-    }
+    pub users: BelongsTo<super::users::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

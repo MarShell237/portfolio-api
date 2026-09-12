@@ -1,40 +1,57 @@
 use crate::{
-    dtos::{
-        post_dtos::PostCollection,
-        project_dtos::ProjectCollection,
-        tag_dtos::{TagQuery, TagResponse},
-    },
+    dtos::{post_dtos::PostCollection, project_dtos::ProjectCollection, tag_dtos::TagResponse},
     errors::AppError,
     helpers::{api_response::ApiResponse, app_state::AppState},
     repositories::tag_repositories,
 };
 use actix_web::{
     Responder,
-    web::{Data, Path, Query},
+    web::{Data, Path},
 };
-// a effacer
+//** a effacer
 pub async fn all(app_state: Data<AppState>) -> Result<impl Responder, AppError> {
     let tags = tag_repositories::all(&app_state.db_pool).await?;
     let tag_response: Vec<TagResponse> = tags.into_iter().map(TagResponse::from).collect();
     Ok(ApiResponse::ok("ok", Some(tag_response)))
 }
 
-pub async fn index(
-    app_state: Data<AppState>,
-    query: Query<TagQuery>,
-) -> Result<impl Responder, AppError> {
-    let tag_type = query.r#type.as_deref().ok_or_else(|| {
-        AppError::bad_request(
-            "Missing required 'type' query parameter. Expected 'posts' or 'projects'",
-        )
-    })?;
+// pub async fn index(
+//     app_state: Data<AppState>,
+//     query: Query<TagQuery>,
+// ) -> Result<impl Responder, AppError> {
+//     let tag_type = query.r#type.as_deref().ok_or_else(|| {
+//         AppError::bad_request(
+//             "Missing required 'type' query parameter. Expected 'posts' or 'projects'",
+//         )
+//     })?;
 
-    let tags = tag_repositories::find_by_type_with_count(&app_state.db_pool, tag_type).await?;
+//     let tags = tag_repositories::find_by_type_with_count(&app_state.db_pool, tag_type).await?;
 
+//     let tag_responses: Vec<TagResponse> = tags.into_iter().map(TagResponse::from).collect();
+
+//     Ok(ApiResponse::ok(
+//         "Tags retrieved successfully",
+//         Some(tag_responses),
+//     ))
+// }
+//** jusqu'ici
+
+pub async fn index_posts(app_state: Data<AppState>) -> Result<impl Responder, AppError> {
+    let tags = tag_repositories::find_post_tags_with_count(&app_state.db_pool).await?;
     let tag_responses: Vec<TagResponse> = tags.into_iter().map(TagResponse::from).collect();
 
     Ok(ApiResponse::ok(
-        "Tags retrieved successfully",
+        "Tags for posts retrieved successfully",
+        Some(tag_responses),
+    ))
+}
+
+pub async fn index_projects(app_state: Data<AppState>) -> Result<impl Responder, AppError> {
+    let tags = tag_repositories::find_project_tags_with_count(&app_state.db_pool).await?;
+    let tag_responses: Vec<TagResponse> = tags.into_iter().map(TagResponse::from).collect();
+
+    Ok(ApiResponse::ok(
+        "Tags for projects retrieved successfully",
         Some(tag_responses),
     ))
 }

@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "users")]
 pub struct Model {
@@ -18,34 +19,12 @@ pub struct Model {
     pub deleted_at: Option<DateTime>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "super::comments::Entity")]
-    Comments,
-    #[sea_orm(has_many = "super::likes::Entity")]
-    Likes,
-    #[sea_orm(has_many = "super::shares::Entity")]
-    Shares,
-}
-
-impl Related<super::comments::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Comments.def()
-    }
-}
-
-impl Related<super::likes::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Likes.def()
-    }
-}
-
-impl Related<super::shares::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Shares.def()
-    }
+    #[sea_orm(has_many)]
+    pub comments: HasMany<super::comments::Entity>,
+    #[sea_orm(has_many)]
+    pub likes: HasMany<super::likes::Entity>,
+    #[sea_orm(has_many)]
+    pub shares: HasMany<super::shares::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

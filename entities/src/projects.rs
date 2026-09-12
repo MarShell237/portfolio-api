@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "projects")]
 pub struct Model {
@@ -23,18 +24,10 @@ pub struct Model {
     pub published_at: Option<DateTime>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "super::project_tag::Entity")]
-    ProjectTag,
-}
-
-impl Related<super::project_tag::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ProjectTag.def()
-    }
+    #[sea_orm(has_many)]
+    pub project_tags: HasMany<super::project_tag::Entity>,
+    #[sea_orm(has_many, via = "project_tag")]
+    pub tags: HasMany<super::tags::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

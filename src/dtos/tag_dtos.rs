@@ -23,11 +23,6 @@ pub struct TagResponse {
     pub updated_at: DateTime,
 }
 
-#[derive(Deserialize)]
-pub struct TagQuery {
-    pub r#type: Option<String>,
-}
-
 impl From<tags::Model> for TagResponse {
     fn from(tag: tags::Model) -> Self {
         Self {

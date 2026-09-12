@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "project_tag")]
 pub struct Model {
@@ -11,38 +12,22 @@ pub struct Model {
     pub project_id: i64,
     #[sea_orm(unique_key = "idx_project_tag_unique")]
     pub tag_id: i64,
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::projects::Entity",
-        from = "Column::ProjectId",
-        to = "super::projects::Column::Id",
+        belongs_to,
+        from = "project_id",
+        to = "id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    Projects,
+    pub projects: BelongsTo<super::projects::Entity>,
     #[sea_orm(
-        belongs_to = "super::tags::Entity",
-        from = "Column::TagId",
-        to = "super::tags::Column::Id",
+        belongs_to,
+        from = "tag_id",
+        to = "id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    Tags,
-}
-
-impl Related<super::projects::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Projects.def()
-    }
-}
-
-impl Related<super::tags::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Tags.def()
-    }
+    pub tags: BelongsTo<super::tags::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

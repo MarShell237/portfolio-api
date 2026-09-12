@@ -6,7 +6,9 @@ pub fn config(config: &mut ServiceConfig) {
         scope("api/v2")
             .service(
                 scope("tags")
-                    .route("", get().to(tag_handlers::index))
+                    // .route("", get().to(tag_handlers::index))
+                    .route("posts", get().to(tag_handlers::index_posts))
+                    .route("projects", get().to(tag_handlers::index_projects))
                     // a effacer
                     .route("all", get().to(tag_handlers::all))
                     .route("{slug}", get().to(tag_handlers::show))

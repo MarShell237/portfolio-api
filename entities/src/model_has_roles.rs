@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "model_has_roles")]
 pub struct Model {
@@ -11,24 +12,14 @@ pub struct Model {
     pub model_type: String,
     #[sea_orm(primary_key, auto_increment = false)]
     pub model_id: i64,
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::roles::Entity",
-        from = "Column::RoleId",
-        to = "super::roles::Column::Id",
+        belongs_to,
+        from = "role_id",
+        to = "id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    Roles,
-}
-
-impl Related<super::roles::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Roles.def()
-    }
+    pub roles: BelongsTo<super::roles::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "roles")]
 pub struct Model {
@@ -13,35 +14,10 @@ pub struct Model {
     pub guard_name: String,
     pub created_at: DateTime,
     pub updated_at: DateTime,
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "super::model_has_roles::Entity")]
-    ModelHasRoles,
-    #[sea_orm(has_many = "super::role_has_permissions::Entity")]
-    RoleHasPermissions,
-}
-
-impl Related<super::model_has_roles::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ModelHasRoles.def()
-    }
-}
-
-impl Related<super::role_has_permissions::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::RoleHasPermissions.def()
-    }
-}
-
-impl Related<super::permissions::Entity> for Entity {
-    fn to() -> RelationDef {
-        super::role_has_permissions::Relation::Permissions.def()
-    }
-    fn via() -> Option<RelationDef> {
-        Some(super::role_has_permissions::Relation::Roles.def().rev())
-    }
+    #[sea_orm(has_many)]
+    pub model_has_roles: HasMany<super::model_has_roles::Entity>,
+    #[sea_orm(has_many, via = "role_has_permissions")]
+    pub permissions: HasMany<super::permissions::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
