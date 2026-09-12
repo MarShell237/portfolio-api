@@ -2,14 +2,15 @@ use actix_web::{
     Responder,
     web::{Data, Path, Query},
 };
+use entities::projects;
 
-use crate::helpers::pagination_meta::PaginationParams;
 use crate::{
     dtos::project_dtos::ProjectResponse,
     errors::AppError,
     helpers::{api_response::ApiResponse, app_state::AppState},
     repositories::project_repositories,
 };
+use crate::{dtos::tag_dtos::TagResponse, helpers::pagination_meta::PaginationParams};
 
 pub async fn index(
     app_state: Data<AppState>,
@@ -51,6 +52,18 @@ pub async fn metrics(
     Ok(ApiResponse::ok(
         "Project metrics retrieved successfully",
         Some(project_repositories::get_metrics(project_id.into_inner(), &app_state.db_pool).await?),
+    ))
+}
+
+pub async fn get_tags(
+    project_id: Path<i64>,
+    app_state: Data<AppState>,
+) -> Result<impl Responder, AppError> {
+    let tags = project_repositories::get_tags(project_id.into_inner(), &app_state.db_pool).await?;
+    let tags_response: Vec<TagResponse> = tags.into_iter().map(TagResponse::from).collect();
+    Ok(ApiResponse::ok(
+        "Project tags retrieved succesfully",
+        Some(tags_response),
     ))
 }
 

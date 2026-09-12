@@ -1,6 +1,7 @@
-use entities::{comments, likes, posts, shares};
+use entities::{comments, likes, posts, shares, tags};
 use sea_orm::{
-    ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
+    ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, PaginatorTrait, QueryFilter,
+    QueryOrder,
 };
 
 use crate::{
@@ -98,6 +99,17 @@ pub async fn get_metrics(
         likes_count,
         shares_count,
     })
+}
+
+pub async fn get_tags(
+    post_id: i64,
+    db_pool: &DatabaseConnection,
+) -> Result<Vec<tags::Model>, AppError> {
+    let post = find_or_fail(post_id, db_pool).await?;
+    post.find_related(tags::Entity)
+        .all(db_pool)
+        .await
+        .map_err(AppError::from)
 }
 
 pub async fn adjacent(

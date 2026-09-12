@@ -21,6 +21,7 @@ pub fn config(config: &mut ServiceConfig) {
                     .route("pinned", get().to(project_handlers::pinned))
                     .route("{slug}", get().to(project_handlers::show))
                     .route("{project_id}/metrics", get().to(project_handlers::metrics))
+                    .route("{project_id}/tags", get().to(project_handlers::get_tags))
                     .route(
                         "{project_id}/adjacent",
                         get().to(project_handlers::adjacent),
@@ -32,6 +33,7 @@ pub fn config(config: &mut ServiceConfig) {
                     .route("pinned", get().to(post_handlers::pinned))
                     .route("{slug}", get().to(post_handlers::show))
                     .route("{post_id}/metrics", get().to(post_handlers::metrics))
+                    .route("{post_id}/tags", get().to(post_handlers::get_tags))
                     .route("{post_id}/adjacent", get().to(post_handlers::adjacent)),
             ),
     );

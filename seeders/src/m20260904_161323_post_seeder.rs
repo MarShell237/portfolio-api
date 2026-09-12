@@ -1,5 +1,5 @@
-use entities::posts;
-use sea_orm::EntityTrait;
+use entities::{post_tag, posts};
+use sea_orm::{ActiveValue::Set, EntityTrait};
 use sea_orm_migration::prelude::*;
 
 pub struct Migration;
@@ -14,14 +14,38 @@ impl MigrationName for Migration {
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        let posts: Vec<posts::ActiveModel> =
+
+        let posts_data: Vec<posts::ActiveModel> =
             (0..8).map(|_| factories::post_factory::create()).collect();
-        posts::Entity::insert_many(posts).exec(db).await?;
+
+        let inserted_posts = posts::Entity::insert_many(posts_data)
+            .exec_with_returning(db)
+            .await?;
+
+        let mut pivot_relations = Vec::new();
+
+        for post in inserted_posts {
+            let tag_base_id = post.id;
+
+            for offset in 0..3 {
+                pivot_relations.push(post_tag::ActiveModel {
+                    post_id: Set(post.id),
+                    tag_id: Set(tag_base_id + offset),
+                    ..Default::default()
+                });
+            }
+        }
+
+        post_tag::Entity::insert_many(pivot_relations)
+            .exec(db)
+            .await?;
+
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
+        post_tag::Entity::delete_many().exec(db).await?;
         posts::Entity::delete_many().exec(db).await?;
         Ok(())
     }
