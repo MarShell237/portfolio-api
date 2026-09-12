@@ -2,7 +2,8 @@ use crate::errors::AppError;
 use entities::{post_tag, posts, project_tag, projects, tags};
 use migrations::SimpleExpr;
 use sea_orm::{
-    ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, QueryFilter, QueryOrder, QuerySelect,
+    ColumnTrait, DatabaseConnection, EntityTrait, JoinType, ModelTrait, QueryFilter, QueryOrder,
+    QuerySelect, RelationTrait,
 };
 
 // a effacer
@@ -24,28 +25,27 @@ pub async fn find_by_slug_or_fail(
 pub async fn find_post_tags_with_count(
     db_pool: &DatabaseConnection,
 ) -> Result<Vec<tags::Model>, AppError> {
-    // post_tag::Entity::find()
-    //     .find_related(tags::Entity)
-    //     .group_by(tags::Column::Id)
-    //     .order_by_desc(SimpleExpr::from(post_tag::Column::PostId.count()))
-    //     .all(db_pool)
-    //     .await
-    //     .map_err(AppError::from)
-    Ok(tags::Entity::find().all(db_pool).await?)
+    tags::Entity::find()
+        .join(JoinType::InnerJoin, tags::Relation::PostTag.def())
+        .group_by(tags::Column::Id)
+        .order_by_desc(SimpleExpr::from(post_tag::Column::PostId.count()))
+        .all(db_pool)
+        .await
+        .map_err(AppError::from)
 }
 
 pub async fn find_project_tags_with_count(
     db_pool: &DatabaseConnection,
 ) -> Result<Vec<tags::Model>, AppError> {
-    // project_tag::Entity::find()
-    //     .find_related(tags::Entity)
-    //     .group_by(tags::Column::Id)
-    //     .order_by_desc(SimpleExpr::from(project_tag::Column::ProjectId.count()))
-    //     .all(db_pool)
-    //     .await
-    //     .map_err(AppError::from)
-    Ok(tags::Entity::find().all(db_pool).await?)
+    tags::Entity::find()
+        .join(JoinType::InnerJoin, tags::Relation::ProjectTag.def())
+        .group_by(tags::Column::Id)
+        .order_by_desc(SimpleExpr::from(project_tag::Column::ProjectId.count()))
+        .all(db_pool)
+        .await
+        .map_err(AppError::from)
 }
+
 pub async fn find_projects_by_tag_slug(
     db_pool: &DatabaseConnection,
     slug: &str,
