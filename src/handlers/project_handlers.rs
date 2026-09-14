@@ -2,7 +2,6 @@ use actix_web::{
     Responder,
     web::{Data, Path, Query},
 };
-use entities::projects;
 
 use crate::{
     dtos::project_dtos::ProjectResponse,

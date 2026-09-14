@@ -2,8 +2,8 @@ use crate::errors::AppError;
 use entities::{post_tag, posts, project_tag, projects, tags};
 use migrations::SimpleExpr;
 use sea_orm::{
-    ColumnTrait, DatabaseConnection, EntityTrait, JoinType, ModelTrait, QueryFilter, QueryOrder,
-    QuerySelect, RelationTrait,
+    DatabaseConnection, EntityTrait, JoinType, ModelTrait, QueryFilter, QueryOrder, QuerySelect,
+    RelationTrait,
 };
 
 // a effacer
@@ -16,7 +16,7 @@ pub async fn find_by_slug_or_fail(
     slug: &str,
 ) -> Result<tags::Model, AppError> {
     tags::Entity::find()
-        .filter(tags::Column::Slug.eq(slug))
+        .filter(tags::COLUMN.slug.eq(slug))
         .one(db_pool)
         .await?
         .ok_or_else(|| AppError::not_found("Tag not found"))
@@ -27,8 +27,8 @@ pub async fn find_post_tags_with_count(
 ) -> Result<Vec<tags::Model>, AppError> {
     tags::Entity::find()
         .join(JoinType::InnerJoin, tags::Relation::PostTag.def())
-        .group_by(tags::Column::Id)
-        .order_by_desc(SimpleExpr::from(post_tag::Column::PostId.count()))
+        .group_by(tags::COLUMN.id)
+        .order_by_desc(SimpleExpr::from(post_tag::COLUMN.post_id.count()))
         .all(db_pool)
         .await
         .map_err(AppError::from)
@@ -39,8 +39,8 @@ pub async fn find_project_tags_with_count(
 ) -> Result<Vec<tags::Model>, AppError> {
     tags::Entity::find()
         .join(JoinType::InnerJoin, tags::Relation::ProjectTag.def())
-        .group_by(tags::Column::Id)
-        .order_by_desc(SimpleExpr::from(project_tag::Column::ProjectId.count()))
+        .group_by(tags::COLUMN.id)
+        .order_by_desc(SimpleExpr::from(project_tag::COLUMN.project_id.count()))
         .all(db_pool)
         .await
         .map_err(AppError::from)
@@ -52,8 +52,8 @@ pub async fn find_projects_by_tag_slug(
 ) -> Result<Vec<projects::Model>, AppError> {
     let tag = find_by_slug_or_fail(db_pool, slug).await?;
     tag.find_related(projects::Entity)
-        .filter(projects::Column::PublishedAt.is_not_null())
-        .order_by_desc(projects::Column::Id)
+        .filter(projects::COLUMN.published_at.is_not_null())
+        .order_by_desc(projects::COLUMN.id)
         .all(db_pool)
         .await
         .map_err(AppError::from)
@@ -65,8 +65,8 @@ pub async fn find_posts_by_tag_slug(
 ) -> Result<Vec<posts::Model>, AppError> {
     let tag = find_by_slug_or_fail(db_pool, slug).await?;
     tag.find_related(posts::Entity)
-        .filter(posts::Column::PublishedAt.is_not_null())
-        .order_by_desc(posts::Column::Id)
+        .filter(posts::COLUMN.published_at.is_not_null())
+        .order_by_desc(posts::COLUMN.id)
         .all(db_pool)
         .await
         .map_err(AppError::from)

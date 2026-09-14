@@ -1,6 +1,6 @@
 use entities::{comments, likes, posts, shares, tags};
 use sea_orm::{
-    ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, PaginatorTrait, QueryFilter,
+    ActiveEnum, DatabaseConnection, EntityTrait, ModelTrait, PaginatorTrait, QueryFilter,
     QueryOrder,
 };
 
@@ -19,8 +19,8 @@ pub async fn get_paginate(
     page: u64,
 ) -> Result<(Vec<PostCollection>, PaginationMeta), AppError> {
     let paginator = posts::Entity::find()
-        .filter(posts::Column::PublishedAt.is_not_null())
-        .order_by_desc(posts::Column::Id)
+        .filter(posts::COLUMN.published_at.is_not_null())
+        .order_by_desc(posts::COLUMN.id)
         .paginate(db_pool, 12);
 
     let (projects, meta) = PaginationMeta::paginate(&paginator, page).await?;
@@ -35,9 +35,9 @@ pub async fn get_paginate(
 
 pub async fn get_pinned(db_pool: &DatabaseConnection) -> Result<Vec<PostCollection>, AppError> {
     let projects = posts::Entity::find()
-        .filter(posts::Column::PublishedAt.is_not_null())
-        .filter(posts::Column::IsPinned.eq(true))
-        .order_by_desc(posts::Column::Id)
+        .filter(posts::COLUMN.published_at.is_not_null())
+        .filter(posts::COLUMN.is_pinned.eq(true))
+        .order_by_desc(posts::COLUMN.id)
         .all(db_pool)
         .await?;
 
@@ -52,8 +52,8 @@ pub async fn find_by_slug_or_fail(
     slug: &str,
 ) -> Result<posts::Model, AppError> {
     posts::Entity::find()
-        .filter(posts::Column::PublishedAt.is_not_null())
-        .filter(posts::Column::Slug.eq(slug))
+        .filter(posts::COLUMN.published_at.is_not_null())
+        .filter(posts::COLUMN.slug.eq(slug))
         .one(db)
         .await?
         .ok_or_else(|| AppError::not_found("Post not found"))
@@ -64,8 +64,8 @@ pub async fn find_or_fail(
     db_pool: &DatabaseConnection,
 ) -> Result<posts::Model, AppError> {
     posts::Entity::find()
-        .filter(posts::Column::PublishedAt.is_not_null())
-        .filter(posts::Column::Id.eq(project_id))
+        .filter(posts::COLUMN.published_at.is_not_null())
+        .filter(posts::COLUMN.id.eq(project_id))
         .one(db_pool)
         .await?
         .ok_or_else(|| AppError::not_found("Post not found"))
@@ -76,20 +76,32 @@ pub async fn get_metrics(
     db_pool: &DatabaseConnection,
 ) -> Result<PostMetrics, AppError> {
     let comments_count = comments::Entity::find()
-        .filter(comments::Column::CommentableId.eq(project_id))
-        .filter(comments::Column::CommentableType.eq(CommentableEnum::Post))
+        .filter(comments::COLUMN.commentable_id.eq(project_id))
+        .filter(
+            comments::COLUMN
+                .commentable_type
+                .eq(CommentableEnum::Post.to_value()),
+        )
         .count(db_pool)
         .await?;
 
     let likes_count = likes::Entity::find()
-        .filter(likes::Column::LikeableId.eq(project_id))
-        .filter(likes::Column::LikeableType.eq(LikeableEnum::Post))
+        .filter(likes::COLUMN.likeable_id.eq(project_id))
+        .filter(
+            likes::COLUMN
+                .likeable_type
+                .eq(LikeableEnum::Post.to_value()),
+        )
         .count(db_pool)
         .await?;
 
     let shares_count = shares::Entity::find()
-        .filter(shares::Column::SharerId.eq(project_id))
-        .filter(shares::Column::ShareableType.eq(ShareableEnum::Post))
+        .filter(shares::COLUMN.sharer_id.eq(project_id))
+        .filter(
+            shares::COLUMN
+                .shareable_type
+                .eq(ShareableEnum::Post.to_value()),
+        )
         .count(db_pool)
         .await?;
 
@@ -113,22 +125,30 @@ pub async fn get_tags(
 }
 
 pub async fn adjacent(
-    project_id: i64,
+    post_id: i64,
     db_pool: &DatabaseConnection,
 ) -> Result<PostsAdjacentResponse, AppError> {
-    let project = find_or_fail(project_id, db_pool).await?;
-
+    let post = find_or_fail(post_id, db_pool).await?;
+    let published_at = match post.published_at {
+        Some(date) => date,
+        None => {
+            return Ok(PostsAdjacentResponse {
+                prev: None,
+                next: None,
+            });
+        }
+    };
     let prev_model = posts::Entity::find()
-        .filter(posts::Column::PublishedAt.is_not_null())
-        .filter(posts::Column::PublishedAt.lt(project.published_at))
-        .order_by_desc(posts::Column::PublishedAt)
+        .filter(posts::COLUMN.published_at.is_not_null())
+        .filter(posts::COLUMN.published_at.lt(published_at))
+        .order_by_desc(posts::COLUMN.published_at)
         .one(db_pool)
         .await?;
 
     let next_model = posts::Entity::find()
-        .filter(posts::Column::PublishedAt.is_not_null())
-        .filter(posts::Column::PublishedAt.gt(project.published_at))
-        .order_by_asc(posts::Column::PublishedAt)
+        .filter(posts::COLUMN.published_at.is_not_null())
+        .filter(posts::COLUMN.published_at.gt(published_at))
+        .order_by_asc(posts::COLUMN.published_at)
         .one(db_pool)
         .await?;
 
