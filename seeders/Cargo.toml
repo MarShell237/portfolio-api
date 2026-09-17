@@ -13,6 +13,7 @@ path = "src/lib.rs"
 tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread"] }
 entities = { path = "../entities" }
 factories = { path = "../factories" }
+portfolio_api = { path = ".." }
 sea-orm = { version = "2.0.0" }
 fake = "3.0"
 

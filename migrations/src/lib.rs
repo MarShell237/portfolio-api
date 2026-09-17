@@ -14,6 +14,10 @@ mod m20260813_223424_create_permissions_table;
 mod m20260813_223439_create_model_has_roles_table;
 mod m20260813_223457_create_model_has_permissions_table;
 mod m20260813_223511_create_role_has_permissions_table;
+mod m20260917_160946_create_users_roles_table;
+mod m20260917_161024_create_users_permissions_table;
+mod m20260917_161115_create_posts_tags_table;
+mod m20260917_161123_create_projects_tags_table;
 
 pub struct Migrator;
 
@@ -35,6 +39,10 @@ impl MigratorTrait for Migrator {
             Box::new(m20260813_223439_create_model_has_roles_table::Migration),
             Box::new(m20260813_223457_create_model_has_permissions_table::Migration),
             Box::new(m20260813_223511_create_role_has_permissions_table::Migration),
+            Box::new(m20260917_160946_create_users_roles_table::Migration),
+            Box::new(m20260917_161024_create_users_permissions_table::Migration),
+            Box::new(m20260917_161115_create_posts_tags_table::Migration),
+            Box::new(m20260917_161123_create_projects_tags_table::Migration),
         ]
     }
 }

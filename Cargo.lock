@@ -2156,7 +2156,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "portfolio-api"
+name = "portfolio_api"
 version = "0.1.0"
 dependencies = [
  "actix-web",
@@ -2166,7 +2166,6 @@ dependencies = [
  "factories",
  "migrations",
  "sea-orm",
- "seeders",
  "serde",
  "serde_json",
 ]
@@ -2721,6 +2720,7 @@ dependencies = [
  "entities",
  "factories",
  "fake 3.1.0",
+ "portfolio_api",
  "sea-orm",
  "sea-orm-migration",
  "tokio",

@@ -18,6 +18,8 @@ pub struct Model {
     pub model_has_permissions: HasMany<super::model_has_permissions::Entity>,
     #[sea_orm(has_many, via = "role_has_permissions")]
     pub roles: HasMany<super::roles::Entity>,
+    #[sea_orm(has_many, via = "users_permissions")]
+    pub users: HasMany<super::users::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

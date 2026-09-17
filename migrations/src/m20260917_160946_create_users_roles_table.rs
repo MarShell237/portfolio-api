@@ -4,7 +4,7 @@ pub struct Migration;
 
 impl MigrationName for Migration {
     fn name(&self) -> &str {
-        "m20260813_223439_create_model_has_roles_table"
+        "m20260917_160946_create_users_roles_table"
     }
 }
 
@@ -14,21 +14,22 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table("model_has_roles")
+                    .table("users_roles")
                     .if_not_exists()
+                    .col(big_integer("user_id"))
                     .col(big_integer("role_id"))
-                    .col(string("model_type"))
-                    .col(big_integer("model_id"))
-                    .primary_key(
-                        Index::create()
-                            .col("role_id")
-                            .col("model_type")
-                            .col("model_id"),
+                    .primary_key(Index::create().col("user_id").col("role_id"))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_users_roles_user_id")
+                            .from("users_roles", "user_id")
+                            .to("users", "id")
+                            .on_delete(ForeignKeyAction::Cascade),
                     )
                     .foreign_key(
                         ForeignKey::create()
-                            .name("fk_model_has_roles_role_id")
-                            .from("model_has_roles", "role_id")
+                            .name("fk_users_roles_role_id")
+                            .from("users_roles", "role_id")
                             .to("roles", "id")
                             .on_delete(ForeignKeyAction::Cascade),
                     )
@@ -39,7 +40,7 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table("model_has_roles").to_owned())
+            .drop_table(Table::drop().table("users_roles").to_owned())
             .await
     }
 }

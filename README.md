@@ -17,7 +17,9 @@ sea-orm-cli migrate generate create_[]_table -d migrations
 ```bash
 sea-orm-cli generate entity \
 -o entities/src \
---entity-format dense \
+--entity-format dense
+;
+diff entities-backup/src entities/src
 ```
 
 ### Seeders
