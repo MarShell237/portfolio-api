@@ -8,10 +8,8 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i64,
-    #[sea_orm(unique_key = "roles_name_guard_name_unique")]
+    #[sea_orm(unique)]
     pub name: String,
-    #[sea_orm(unique_key = "roles_name_guard_name_unique")]
-    pub guard_name: String,
     pub created_at: DateTime,
     pub updated_at: DateTime,
     #[sea_orm(has_many)]

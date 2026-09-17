@@ -17,18 +17,9 @@ impl MigrationTrait for Migration {
                     .table("roles")
                     .if_not_exists()
                     .col(big_integer("id").auto_increment().primary_key())
-                    .col(string("name"))
-                    .col(string("guard_name"))
+                    .col(string("name").unique_key())
                     .col(timestamp("created_at").extra("DEFAULT CURRENT_TIMESTAMP"))
                     .col(timestamp("updated_at").extra("DEFAULT CURRENT_TIMESTAMP"))
-                    // Contrainte unique sur (name, guard_name)
-                    .index(
-                        Index::create()
-                            .unique()
-                            .name("roles_name_guard_name_unique")
-                            .col("name")
-                            .col("guard_name"),
-                    )
                     .to_owned(),
             )
             .await
