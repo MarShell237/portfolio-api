@@ -3,6 +3,7 @@ pub use sea_orm_migration::prelude::*;
 mod m20260829_122936_tag_seeder;
 mod m20260902_214327_project_seeder;
 mod m20260904_161323_post_seeder;
+mod m20260917_131334_roles_seeder;
 
 pub struct Migrator;
 
@@ -13,6 +14,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260829_122936_tag_seeder::Migration),
             Box::new(m20260902_214327_project_seeder::Migration),
             Box::new(m20260904_161323_post_seeder::Migration),
+            Box::new(m20260917_131334_roles_seeder::Migration),
         ]
     }
 
