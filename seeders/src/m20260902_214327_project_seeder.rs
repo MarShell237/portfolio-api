@@ -1,4 +1,4 @@
-use entities::{project_tag, projects};
+use entities::{projects, projects_tags};
 use sea_orm::{ActiveValue::Set, EntityTrait};
 use sea_orm_migration::prelude::*;
 
@@ -27,7 +27,7 @@ impl MigrationTrait for Migration {
             let tag_base_id = project.id;
 
             for offset in 0..3 {
-                pivot_relations.push(project_tag::ActiveModel {
+                pivot_relations.push(projects_tags::ActiveModel {
                     project_id: Set(project.id),
                     tag_id: Set(tag_base_id + offset),
                     ..Default::default()
@@ -35,7 +35,7 @@ impl MigrationTrait for Migration {
             }
         }
 
-        project_tag::Entity::insert_many(pivot_relations)
+        projects_tags::Entity::insert_many(pivot_relations)
             .exec(db)
             .await?;
 
@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        project_tag::Entity::delete_many().exec(db).await?;
+        projects_tags::Entity::delete_many().exec(db).await?;
         projects::Entity::delete_many().exec(db).await?;
         Ok(())
     }

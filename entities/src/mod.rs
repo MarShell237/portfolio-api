@@ -4,17 +4,13 @@ pub mod prelude;
 
 pub mod comments;
 pub mod likes;
-pub mod model_has_permissions;
-pub mod model_has_roles;
 pub mod permissions;
-pub mod post_tag;
 pub mod posts;
 pub mod posts_tags;
-pub mod project_tag;
 pub mod projects;
 pub mod projects_tags;
-pub mod role_has_permissions;
 pub mod roles;
+pub mod roles_permissions;
 pub mod shares;
 pub mod tags;
 pub mod users;

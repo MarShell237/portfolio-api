@@ -24,8 +24,8 @@ pub struct Model {
     pub created_at: DateTime,
     pub updated_at: DateTime,
     #[sea_orm(has_many)]
-    pub post_tags: HasMany<super::post_tag::Entity>,
-    #[sea_orm(has_many, via = "post_tag")]
+    pub posts_tags: HasMany<super::posts_tags::Entity>,
+    #[sea_orm(has_many, via = "posts_tags")]
     pub tags: HasMany<super::tags::Entity>,
 }
 

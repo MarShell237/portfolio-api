@@ -14,9 +14,7 @@ pub struct Model {
     pub guard_name: String,
     pub created_at: DateTime,
     pub updated_at: DateTime,
-    #[sea_orm(has_many)]
-    pub model_has_permissions: HasMany<super::model_has_permissions::Entity>,
-    #[sea_orm(has_many, via = "role_has_permissions")]
+    #[sea_orm(has_many, via = "roles_permissions")]
     pub roles: HasMany<super::roles::Entity>,
     #[sea_orm(has_many, via = "users_permissions")]
     pub users: HasMany<super::users::Entity>,

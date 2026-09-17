@@ -12,10 +12,10 @@ pub struct Model {
     pub name: String,
     pub created_at: DateTime,
     pub updated_at: DateTime,
-    #[sea_orm(has_many)]
-    pub model_has_roles: HasMany<super::model_has_roles::Entity>,
-    #[sea_orm(has_many, via = "role_has_permissions")]
+    #[sea_orm(has_many, via = "roles_permissions")]
     pub permissions: HasMany<super::permissions::Entity>,
+    #[sea_orm(has_many, via = "users_roles")]
+    pub users: HasMany<super::users::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

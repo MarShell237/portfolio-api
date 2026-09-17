@@ -1,5 +1,5 @@
 use crate::errors::AppError;
-use entities::{post_tag, posts, project_tag, projects, tags};
+use entities::{posts, posts_tags, projects, projects_tags, tags};
 use migrations::SimpleExpr;
 use sea_orm::{
     DatabaseConnection, EntityTrait, JoinType, ModelTrait, QueryFilter, QueryOrder, QuerySelect,
@@ -26,9 +26,9 @@ pub async fn find_post_tags_with_count(
     db_pool: &DatabaseConnection,
 ) -> Result<Vec<tags::Model>, AppError> {
     tags::Entity::find()
-        .join(JoinType::InnerJoin, tags::Relation::PostTag.def())
+        .join(JoinType::InnerJoin, tags::Relation::PostsTags.def())
         .group_by(tags::COLUMN.id)
-        .order_by_desc(SimpleExpr::from(post_tag::COLUMN.post_id.count()))
+        .order_by_desc(SimpleExpr::from(posts_tags::COLUMN.post_id.count()))
         .all(db_pool)
         .await
         .map_err(AppError::from)
@@ -38,9 +38,9 @@ pub async fn find_project_tags_with_count(
     db_pool: &DatabaseConnection,
 ) -> Result<Vec<tags::Model>, AppError> {
     tags::Entity::find()
-        .join(JoinType::InnerJoin, tags::Relation::ProjectTag.def())
+        .join(JoinType::InnerJoin, tags::Relation::ProjectsTags.def())
         .group_by(tags::COLUMN.id)
-        .order_by_desc(SimpleExpr::from(project_tag::COLUMN.project_id.count()))
+        .order_by_desc(SimpleExpr::from(projects_tags::COLUMN.project_id.count()))
         .all(db_pool)
         .await
         .map_err(AppError::from)

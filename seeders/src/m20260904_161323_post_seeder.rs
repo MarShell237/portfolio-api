@@ -1,4 +1,4 @@
-use entities::{post_tag, posts};
+use entities::{posts, posts_tags};
 use sea_orm::{ActiveValue::Set, EntityTrait};
 use sea_orm_migration::prelude::*;
 
@@ -28,7 +28,7 @@ impl MigrationTrait for Migration {
             let tag_base_id = post.id;
 
             for offset in 0..3 {
-                pivot_relations.push(post_tag::ActiveModel {
+                pivot_relations.push(posts_tags::ActiveModel {
                     post_id: Set(post.id),
                     tag_id: Set(tag_base_id + offset),
                     ..Default::default()
@@ -36,7 +36,7 @@ impl MigrationTrait for Migration {
             }
         }
 
-        post_tag::Entity::insert_many(pivot_relations)
+        posts_tags::Entity::insert_many(pivot_relations)
             .exec(db)
             .await?;
 
@@ -45,7 +45,7 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        post_tag::Entity::delete_many().exec(db).await?;
+        posts_tags::Entity::delete_many().exec(db).await?;
         posts::Entity::delete_many().exec(db).await?;
         Ok(())
     }
