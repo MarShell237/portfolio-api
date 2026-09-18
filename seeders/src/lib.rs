@@ -7,6 +7,8 @@ mod m20260917_131334_roles_seeder;
 mod m20260917_143323_user_seeder;
 mod m20260917_193801_admin_seeder;
 mod m20260918_130444_comment_seeder;
+mod m20260918_183913_like_seeder;
+mod m20260918_185439_share_seeder;
 
 pub struct Migrator;
 
@@ -21,6 +23,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20260917_143323_user_seeder::Migration),
             Box::new(m20260917_193801_admin_seeder::Migration),
             Box::new(m20260918_130444_comment_seeder::Migration),
+            Box::new(m20260918_183913_like_seeder::Migration),
+            Box::new(m20260918_185439_share_seeder::Migration),
         ]
     }
 
