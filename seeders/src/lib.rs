@@ -6,6 +6,7 @@ mod m20260904_161323_post_seeder;
 mod m20260917_131334_roles_seeder;
 mod m20260917_143323_user_seeder;
 mod m20260917_193801_admin_seeder;
+mod m20260918_130444_comment_seeder;
 
 pub struct Migrator;
 
@@ -19,6 +20,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260917_131334_roles_seeder::Migration),
             Box::new(m20260917_143323_user_seeder::Migration),
             Box::new(m20260917_193801_admin_seeder::Migration),
+            Box::new(m20260918_130444_comment_seeder::Migration),
         ]
     }
 

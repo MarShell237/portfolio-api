@@ -1,5 +1,5 @@
 use entities::posts;
-use fake::faker::lorem::fr_fr::*;
+use fake::faker::lorem::fr_fr::Words;
 use fake::{Dummy, Fake, Faker};
 use sea_orm::ActiveValue::{NotSet, Set};
 use sea_orm::entity::prelude::DateTime;

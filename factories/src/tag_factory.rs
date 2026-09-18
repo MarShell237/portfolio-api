@@ -1,7 +1,6 @@
 use entities::tags;
-use fake::faker::color::raw::*;
-use fake::faker::lorem::fr_fr::*;
-use fake::locales::FR_FR;
+use fake::faker::color::fr_fr::HexColor;
+use fake::faker::lorem::fr_fr::{Sentences, Words};
 use fake::{Dummy, Fake, Faker};
 use sea_orm::ActiveValue::{NotSet, Set};
 
@@ -10,7 +9,7 @@ pub struct TagFactory {
     #[dummy(faker = "Words(3..5)")]
     pub name: Vec<String>,
 
-    #[dummy(faker = "HexColor(FR_FR)")]
+    #[dummy(faker = "HexColor()")]
     pub color: String,
 
     #[dummy(faker = "Sentences(4..8)")]
