@@ -27,6 +27,7 @@ impl MigrationTrait for Migration {
                     sharer_id: Set(random_user.id),
                     shareable_id: Set(post.id),
                     shareable_type: Set(ShareableEnum::Post.to_value()),
+                    platform: Set("whatsapp".to_string()),
                     ..Default::default()
                 };
                 shares_to_insert.push(active_share);
@@ -40,6 +41,7 @@ impl MigrationTrait for Migration {
                     sharer_id: Set(random_user.id),
                     shareable_id: Set(project.id),
                     shareable_type: Set(ShareableEnum::Project.to_value()),
+                    platform: Set("whatsapp".to_string()),
                     ..Default::default()
                 };
                 shares_to_insert.push(active_share);
