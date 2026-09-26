@@ -7,12 +7,13 @@ mod handlers;
 mod helpers;
 mod repositories;
 
+use actix_cors::Cors;
 use actix_web::{
     App, HttpServer,
     middleware::{Compress, Logger},
     web,
 };
-use config::{APP_PORT, APP_URL, DATABASE_URL};
+use config::{ALLOWED_ORIGIN, APP_PORT, APP_URL, DATABASE_URL};
 use helpers::app_state::AppState;
 use migrations::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
@@ -26,13 +27,19 @@ async fn main() -> std::io::Result<()> {
     Migrator::up(&db_pool, None).await.unwrap();
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin(&*ALLOWED_ORIGIN)
+            .supports_credentials()
+            .max_age(3600);
+
         App::new()
             .app_data(web::Data::new(AppState {
                 db_pool: db_pool.clone(),
             }))
             .configure(api::config)
-            .wrap(Logger::default())
+            .wrap(cors)
             .wrap(Compress::default())
+            .wrap(Logger::default())
     })
     .bind((APP_URL.as_str(), *APP_PORT))
     .unwrap()

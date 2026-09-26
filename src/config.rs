@@ -15,6 +15,10 @@ pub static APP_PORT: LazyLock<u16> = LazyLock::new(|| {
         .expect("APP_PORT must be an integer")
 });
 
+pub static ALLOWED_ORIGIN: LazyLock<String> = LazyLock::new(|| {
+    env::var("ALLOWED_ORIGIN").expect("ALLOWED_ORIGIN must be defined in the .env file")
+});
+
 pub static ADMIN_NAME: LazyLock<String> =
     LazyLock::new(|| env::var("ADMIN_NAME").expect("ADMIN_NAME must be defined in the .env file"));
 
