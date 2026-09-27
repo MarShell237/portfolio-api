@@ -5,6 +5,9 @@ pub static DATABASE_URL: LazyLock<String> = LazyLock::new(|| {
     env::var("DATABASE_URL").expect("DATABASE_URL must be defined in the .env file")
 });
 
+pub static REDIS_URL: LazyLock<String> =
+    LazyLock::new(|| env::var("REDIS_URL").expect("REDIS_URL must be defined in the .env file"));
+
 pub static APP_URL: LazyLock<String> =
     LazyLock::new(|| env::var("APP_URL").expect("APP_URL must be defined in the .env file"));
 
@@ -17,6 +20,27 @@ pub static APP_PORT: LazyLock<u16> = LazyLock::new(|| {
 
 pub static ALLOWED_ORIGIN: LazyLock<String> = LazyLock::new(|| {
     env::var("ALLOWED_ORIGIN").expect("ALLOWED_ORIGIN must be defined in the .env file")
+});
+
+pub static COOKIE_NAME: LazyLock<String> = LazyLock::new(|| {
+    env::var("COOKIE_NAME").expect("COOKIE_NAME must be defined in the .env file")
+});
+
+pub static COOKIE_DOMAIN: LazyLock<Option<String>> = LazyLock::new(|| {
+    let domain = env::var("COOKIE_DOMAIN").expect("COOKIE_DOMAIN must be defined in the .env file");
+
+    if domain.trim().is_empty() {
+        None
+    } else {
+        Some(domain)
+    }
+});
+
+pub static COOKIE_SECURE: LazyLock<bool> = LazyLock::new(|| {
+    env::var("COOKIE_SECURE")
+        .expect("COOKIE_SECURE must be defined in the .env file")
+        .parse::<bool>()
+        .expect("COOKIE_SECURE must be a boolean ('true' or 'false')")
 });
 
 pub static ADMIN_NAME: LazyLock<String> =

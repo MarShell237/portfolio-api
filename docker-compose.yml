@@ -1,7 +1,6 @@
 services:
-  db:
+  postgres:
     image: postgres:18-alpine
-    container_name: portfolio_db
     restart: always
     environment:
       POSTGRES_DB: portfolio_db
@@ -12,5 +11,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
 
+  redis:
+    image: redis:8.10.2-alpine
+    command: redis-server --requirepass password
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
 volumes:
+  redis_data:
+    driver: local
   postgres_data:
+    driver: local
