@@ -27,22 +27,22 @@ where
 }
 
 pub async fn create_user(
-    user_request: RegisterRequest,
+    register_request: RegisterRequest,
     db_pool: &DatabaseConnection,
 ) -> Result<users::Model, AppError> {
-    // let user = users::ActiveModel {
-    //     name: Set(user_request.name),
-    //     email: Set(user_request.email),
-    //     phone: Set(user_request.phone),
-    //     password: Set(user_request.password),
-    //     ..Default::default()
-    // }
-    // .insert(db_pool)
-    // .await?;
-    // assign_role(user.id, UserRole::VISITOR, db_pool).await?;
-    // Ok(user)
-    users::Entity::find_by_id(1)
-        .one(db_pool)
-        .await?
-        .ok_or_else(|| AppError::not_found("user not found"))
+    let user = users::ActiveModel {
+        name: Set(register_request.name),
+        email: Set(register_request.email),
+        phone: Set(register_request.phone),
+        password: Set(register_request.password),
+        ..Default::default()
+    }
+    .insert(db_pool)
+    .await?;
+    assign_role(user.id, UserRole::VISITOR, db_pool).await?;
+    Ok(user)
+    // users::Entity::find_by_id(1)
+    //     .one(db_pool)
+    //     .await?
+    //     .ok_or_else(|| AppError::not_found("user not found"))
 }

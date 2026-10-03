@@ -13,10 +13,13 @@ use crate::{
 
 pub async fn register(
     app_state: Data<AppState>,
-    Json(user_request): Json<RegisterRequest>,
+    Json(register_request): Json<RegisterRequest>,
 ) -> Result<impl Responder, AppError> {
+    register_request
+        .validate_uniqueness(&app_state.db_pool)
+        .await?;
     let user: users::Model =
-        user_repositories::create_user(user_request, &app_state.db_pool).await?;
+        user_repositories::create_user(register_request, &app_state.db_pool).await?;
     let user_response = UserResponse::from(user);
     Ok(ApiResponse::created(
         format!(

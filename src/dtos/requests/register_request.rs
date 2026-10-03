@@ -1,7 +1,9 @@
+use entities::users;
 use regex::Regex;
+use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 use serde::Deserialize;
 use std::sync::LazyLock;
-use validator::{Validate, ValidationError};
+use validator::{Validate, ValidationError, ValidationErrors};
 
 #[derive(Deserialize, Validate, Debug)]
 pub struct RegisterRequest {
@@ -30,3 +32,49 @@ pub struct RegisterRequest {
 
 static PHONE_REGEX: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^\+\d{1,3}[\s\-\(\)]?(\d[\s\-\(\)]?){6,14}$").unwrap());
+
+impl RegisterRequest {
+    pub async fn validate_uniqueness(
+        &self,
+        db: &DatabaseConnection,
+    ) -> Result<(), actix_web_validator::Error> {
+        let mut errors = ValidationErrors::new();
+
+        if users::Entity::find()
+            .filter(users::COLUMN.email.eq(&self.email))
+            .one(db)
+            .await
+            .ok()
+            .flatten()
+            .is_some()
+        {
+            errors.add(
+                "email",
+                ValidationError::new("unique")
+                    .with_message("La valeur du champ adresse e-mail est déjà utilisée.".into()),
+            );
+        }
+
+        if users::Entity::find()
+            .filter(users::COLUMN.phone.eq(&self.phone))
+            .one(db)
+            .await
+            .ok()
+            .flatten()
+            .is_some()
+        {
+            errors.add(
+                "phone",
+                ValidationError::new("unique").with_message(
+                    "La valeur du champ numeros de téléphone est déjà utilisée.".into(),
+                ),
+            );
+        }
+
+        if !errors.is_empty() {
+            return Err(actix_web_validator::Error::Validate(errors));
+        }
+
+        Ok(())
+    }
+}
