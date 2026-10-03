@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use actix_web::{
     HttpRequest, HttpResponse, Responder,
     http::{StatusCode, header::ContentType},
@@ -50,15 +52,15 @@ impl<T: Serialize> ApiResponse<T> {
         }
     }
 
-    // pub fn created(message: impl Into<String>, data: Option<T>) -> Self {
-    //     Self {
-    //         success: true,
-    //         status: StatusCode::CREATED,
-    //         message: message.into(),
-    //         data,
-    //         pagination: None,
-    //     }
-    // }
+    pub fn created(message: impl Into<String>, data: Option<T>) -> Self {
+        Self {
+            success: true,
+            status: StatusCode::CREATED,
+            message: message.into(),
+            data,
+            pagination: None,
+        }
+    }
 
     pub fn not_found(message: impl Into<String>) -> Self {
         Self {
@@ -86,6 +88,19 @@ impl<T: Serialize> ApiResponse<T> {
             status: StatusCode::BAD_REQUEST,
             message: message.into(),
             data: None,
+            pagination: None,
+        }
+    }
+
+    pub fn unprocessable_entity(message: impl Into<String>, errors: HashMap<String, String>) -> Self
+    where
+        T: From<HashMap<String, String>>,
+    {
+        Self {
+            success: false,
+            status: StatusCode::UNPROCESSABLE_ENTITY,
+            message: message.into(),
+            data: Some(errors.into()),
             pagination: None,
         }
     }

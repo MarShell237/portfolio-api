@@ -15,11 +15,12 @@ use actix_session::{
     storage::RedisSessionStore,
 };
 use actix_web::{
-    App, HttpServer,
+    App, HttpServer, ResponseError,
     cookie::{Key, SameSite, time::Duration},
     middleware::{Compress, Logger},
     web,
 };
+use actix_web_validator::JsonConfig;
 use config::{
     ALLOWED_ORIGIN, APP_PORT, APP_URL, COOKIE_DOMAIN, COOKIE_NAME, COOKIE_SECURE, DATABASE_URL,
     REDIS_URL,
@@ -27,6 +28,8 @@ use config::{
 use helpers::app_state::AppState;
 use migrations::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
+
+use crate::errors::AppError;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -45,10 +48,16 @@ async fn main() -> std::io::Result<()> {
             .supports_credentials()
             .max_age(3600);
 
+        let json_config = JsonConfig::default().error_handler(|err, _| {
+            let app_err = AppError::from(err);
+            actix_web::error::InternalError::from_response("", app_err.error_response()).into()
+        });
+
         App::new()
             .app_data(web::Data::new(AppState {
                 db_pool: db_pool.clone(),
             }))
+            .app_data(json_config)
             .configure(api::config)
             .wrap(IdentityMiddleware::default())
             .wrap(

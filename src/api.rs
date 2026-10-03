@@ -1,9 +1,12 @@
-use crate::handlers::{hello_handler, post_handlers, project_handlers, tag_handlers};
-use actix_web::web::{ServiceConfig, get, scope};
+use crate::handlers::{
+    auth_handlers, hello_handler, post_handlers, project_handlers, tag_handlers,
+};
+use actix_web::web::{ServiceConfig, get, post, scope};
 
 pub fn config(config: &mut ServiceConfig) {
     config.route("/", get().to(hello_handler::hello)).service(
         scope("api/v2")
+            .service(scope("users").route("register-cookie", post().to(auth_handlers::register)))
             .service(
                 scope("tags")
                     // .route("", get().to(tag_handlers::index))

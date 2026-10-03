@@ -1,6 +1,10 @@
-use crate::errors::AppError;
-use entities::{roles, users_roles};
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, ConnectionTrait};
+use crate::{
+    dtos::requests::register_request::RegisterRequest, enums::user_role::UserRole, errors::AppError,
+};
+use entities::{roles, users, users_roles};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseConnection, EntityTrait,
+};
 
 pub async fn assign_role<C>(
     user_id: i64,
@@ -20,4 +24,25 @@ where
     };
     user_role.insert(db_pool).await?;
     Ok(())
+}
+
+pub async fn create_user(
+    user_request: RegisterRequest,
+    db_pool: &DatabaseConnection,
+) -> Result<users::Model, AppError> {
+    // let user = users::ActiveModel {
+    //     name: Set(user_request.name),
+    //     email: Set(user_request.email),
+    //     phone: Set(user_request.phone),
+    //     password: Set(user_request.password),
+    //     ..Default::default()
+    // }
+    // .insert(db_pool)
+    // .await?;
+    // assign_role(user.id, UserRole::VISITOR, db_pool).await?;
+    // Ok(user)
+    users::Entity::find_by_id(1)
+        .one(db_pool)
+        .await?
+        .ok_or_else(|| AppError::not_found("user not found"))
 }

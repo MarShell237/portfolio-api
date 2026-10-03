@@ -31,3 +31,6 @@ actix-cors = "0.7.2"
 actix-session = { version = "0.11.0", features = ["redis-session-rustls"] }
 actix-identity = "0.9.0"
 argon2 = "0.6.0"
+validator = { version = "0.20.0", features = ["derive"] }
+regex = "1.13.1"
+actix-web-validator = "7.0.0"
