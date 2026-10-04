@@ -2,9 +2,7 @@ use crate::{
     dtos::requests::register_request::RegisterRequest, enums::user_role::UserRole, errors::AppError,
 };
 use entities::{roles, users, users_roles};
-use sea_orm::{
-    ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseConnection, EntityTrait,
-};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseConnection};
 
 pub async fn assign_role<C>(
     user_id: i64,
@@ -41,8 +39,4 @@ pub async fn create_user(
     .await?;
     assign_role(user.id, UserRole::VISITOR, db_pool).await?;
     Ok(user)
-    // users::Entity::find_by_id(1)
-    //     .one(db_pool)
-    //     .await?
-    //     .ok_or_else(|| AppError::not_found("user not found"))
 }

@@ -2,7 +2,8 @@ use crate::{
     dtos::responses::user_response::UserResponse, helpers::api_response::ApiResponse,
     repositories::user_repositories,
 };
-use actix_web::{Responder, web::Data};
+use actix_identity::Identity;
+use actix_web::{HttpMessage, HttpRequest, Responder, web::Data};
 use actix_web_validator::Json;
 use entities::users;
 
@@ -13,6 +14,7 @@ use crate::{
 
 pub async fn register(
     app_state: Data<AppState>,
+    http_request: HttpRequest,
     Json(register_request): Json<RegisterRequest>,
 ) -> Result<impl Responder, AppError> {
     register_request
@@ -21,6 +23,12 @@ pub async fn register(
     let user: users::Model =
         user_repositories::create_user(register_request, &app_state.db_pool).await?;
     let user_response = UserResponse::from(user);
+    Identity::login(
+        &http_request.extensions(),
+        user_response.id.clone().to_string().into(),
+    )
+    .unwrap();
+
     Ok(ApiResponse::created(
         format!(
             "Félicitations, {} ! Votre compte a été créé avec succès. Un email de confirmation a été envoyé à l’adresse que vous avez fournie. Veuillez ouvrir cet email et cliquer sur le lien “Vérifier mon adresse e-mail” pour activer votre compte. Si vous ne recevez pas l’email dans quelques minutes, vérifiez votre dossier spam ou demandez à renvoyer le lien de vérification.",

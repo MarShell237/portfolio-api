@@ -92,6 +92,16 @@ impl<T: Serialize> ApiResponse<T> {
         }
     }
 
+    pub fn unauthorized(message: impl Into<String>) -> Self {
+        Self {
+            success: false,
+            status: StatusCode::UNAUTHORIZED,
+            message: message.into(),
+            data: None,
+            pagination: None,
+        }
+    }
+
     pub fn unprocessable_entity(message: impl Into<String>, errors: HashMap<String, String>) -> Self
     where
         T: From<HashMap<String, String>>,

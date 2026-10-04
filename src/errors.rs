@@ -9,6 +9,7 @@ pub enum AppError {
     Internal(String),
     BadRequest(String),
     UnprocessableEntity(HashMap<String, String>),
+    Unauthorized(String),
 }
 
 impl AppError {
@@ -20,19 +21,26 @@ impl AppError {
         Self::BadRequest(msg.into())
     }
 
-    // pub fn internal(msg: impl Into<String>) -> Self {
-    //     Self::Internal(msg.into())
-    // }
+    pub fn internal(msg: impl Into<String>) -> Self {
+        Self::Internal(msg.into())
+    }
 
     pub fn unprocessable_entity(errors: HashMap<String, String>) -> Self {
         Self::UnprocessableEntity(errors)
+    }
+
+    pub fn unauthorized(msg: impl Into<String>) -> Self {
+        Self::Unauthorized(msg.into())
     }
 }
 
 impl fmt::Display for AppError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            AppError::NotFound(msg) | AppError::Internal(msg) | AppError::BadRequest(msg) => {
+            AppError::NotFound(msg)
+            | AppError::Internal(msg)
+            | AppError::BadRequest(msg)
+            | AppError::Unauthorized(msg) => {
                 write!(f, "{}", msg)
             }
             AppError::UnprocessableEntity(_) => {
@@ -83,6 +91,7 @@ impl ResponseError for AppError {
             AppError::Internal(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::BadRequest(_) => StatusCode::BAD_REQUEST,
             AppError::UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
+            AppError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
         }
     }
 
@@ -95,6 +104,9 @@ impl ResponseError for AppError {
                 .json(ApiResponse::<()>::internal_server_error(msg)),
             AppError::BadRequest(msg) => {
                 HttpResponse::BadRequest().json(ApiResponse::<()>::bad_request(msg))
+            }
+            AppError::Unauthorized(msg) => {
+                HttpResponse::Unauthorized().json(ApiResponse::<()>::unauthorized(msg))
             }
             AppError::UnprocessableEntity(errors) => HttpResponse::UnprocessableEntity().json(
                 ApiResponse::<HashMap<String, String>>::unprocessable_entity(
