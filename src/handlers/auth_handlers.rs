@@ -28,7 +28,7 @@ pub async fn register(
         user_response.id.clone().to_string().into(),
     )
     .unwrap();
-
+    // .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
     Ok(ApiResponse::created(
         format!(
             "Félicitations, {} ! Votre compte a été créé avec succès. Un email de confirmation a été envoyé à l’adresse que vous avez fournie. Veuillez ouvrir cet email et cliquer sur le lien “Vérifier mon adresse e-mail” pour activer votre compte. Si vous ne recevez pas l’email dans quelques minutes, vérifiez votre dossier spam ou demandez à renvoyer le lien de vérification.",

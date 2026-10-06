@@ -1,5 +1,6 @@
 use crate::{
-    dtos::requests::register_request::RegisterRequest, enums::user_role::UserRole, errors::AppError,
+    dtos::requests::register_request::RegisterRequest, enums::user_role::UserRole,
+    errors::AppError, helpers::hash,
 };
 use entities::{roles, users, users_roles};
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseConnection};
@@ -32,7 +33,7 @@ pub async fn create_user(
         name: Set(register_request.name),
         email: Set(register_request.email),
         phone: Set(register_request.phone),
-        password: Set(register_request.password),
+        password: Set(hash::make(register_request.password)?),
         ..Default::default()
     }
     .insert(db_pool)
