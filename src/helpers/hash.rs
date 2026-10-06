@@ -14,5 +14,5 @@ pub fn check(password: String, hash_password: String) -> Result<(), AppError> {
         .map_err(|e| AppError::bad_request(format!("Format de mot de passe invalide: {e}")))?;
     Argon2::default()
         .verify_password(password.as_bytes(), &parsed_password)
-        .map_err(|_| AppError::unauthorized(format!("Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe, puis réessayer.")))
+        .map_err(|_| AppError::unauthorized("Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe, puis réessayer."))
 }

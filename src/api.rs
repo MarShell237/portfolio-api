@@ -6,7 +6,11 @@ use actix_web::web::{ServiceConfig, get, post, scope};
 pub fn config(config: &mut ServiceConfig) {
     config.route("/", get().to(hello_handler::hello)).service(
         scope("api/v2")
-            .service(scope("users").route("register-cookie", post().to(auth_handlers::register)))
+            .service(
+                scope("users")
+                    .route("register", post().to(auth_handlers::register))
+                    .route("login", post().to(auth_handlers::login)),
+            )
             .service(
                 scope("tags")
                     // .route("", get().to(tag_handlers::index))

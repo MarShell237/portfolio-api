@@ -41,3 +41,13 @@ pub async fn create_user(
     assign_role(user.id, UserRole::VISITOR, db_pool).await?;
     Ok(user)
 }
+
+pub async fn find_user_by_email(
+    email: &str,
+    db_pool: &DatabaseConnection,
+) -> Result<users::Model, AppError> {
+    users::Entity::find_by_email(email)
+        .one(db_pool)
+        .await?
+        .ok_or_else(|| AppError::not_found("User not found"))
+}

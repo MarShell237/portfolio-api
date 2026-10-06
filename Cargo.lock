@@ -1401,6 +1401,7 @@ version = "0.1.0"
 dependencies = [
  "entities",
  "fake 5.1.0",
+ "portfolio_api",
  "rand 0.8.7",
  "sea-orm",
  "slug",
@@ -2498,7 +2499,6 @@ dependencies = [
  "dotenv",
  "entities",
  "env_logger",
- "factories",
  "migrations",
  "regex",
  "sea-orm",

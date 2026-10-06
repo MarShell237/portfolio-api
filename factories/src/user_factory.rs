@@ -6,6 +6,7 @@ use fake::{
         phone_number::fr_fr::PhoneNumber,
     },
 };
+use portfolio_api::helpers::hash;
 use sea_orm::ActiveValue::{NotSet, Set};
 
 #[derive(Dummy)]
@@ -29,7 +30,7 @@ pub fn create() -> users::ActiveModel {
         email: Set(user_factory.email),
         phone: Set(user_factory.phone),
         email_verified_at: NotSet,
-        password: Set(user_factory.password),
+        password: Set(hash::make(user_factory.password).unwrap()),
         deleted_at: NotSet,
         created_at: NotSet,
         updated_at: NotSet,

@@ -1,5 +1,7 @@
 use entities::{users, users_roles};
-use portfolio_api::{config, enums::user_role::UserRole, repositories::user_repositories};
+use portfolio_api::{
+    config, enums::user_role::UserRole, helpers::hash, repositories::user_repositories,
+};
 use sea_orm::{
     ActiveModelTrait,
     ActiveValue::{NotSet, Set},
@@ -26,7 +28,7 @@ impl MigrationTrait for Migration {
             email: Set(config::ADMIN_EMAIL.clone()),
             phone: Set(config::ADMIN_PHONE.clone()),
             email_verified_at: NotSet,
-            password: Set(config::ADMIN_PASSWORD.clone()),
+            password: Set(hash::make(config::ADMIN_PASSWORD.clone()).unwrap()),
             deleted_at: NotSet,
             created_at: NotSet,
             updated_at: NotSet,

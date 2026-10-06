@@ -19,7 +19,7 @@ members = [
 [dependencies]
 entities = { path = "entities" }
 migrations = { path = "migrations" }
-factories= { path = "factories" }
+# factories= { path = "factories" }
 # seeders= { path = "seeders" }
 actix-web = "4.14.0"
 actix-session = { version = "0.11.0", features = ["redis-session-rustls"] }

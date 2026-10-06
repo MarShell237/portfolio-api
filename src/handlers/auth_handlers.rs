@@ -1,5 +1,6 @@
 use crate::{
-    dtos::responses::user_response::UserResponse, helpers::api_response::ApiResponse,
+    dtos::{requests::login_request::LoginRequest, responses::user_response::UserResponse},
+    helpers::{api_response::ApiResponse, hash},
     repositories::user_repositories,
 };
 use actix_identity::Identity;
@@ -27,11 +28,40 @@ pub async fn register(
         &http_request.extensions(),
         user_response.id.clone().to_string().into(),
     )
-    .unwrap();
-    // .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
+    .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
     Ok(ApiResponse::created(
         format!(
             "Félicitations, {} ! Votre compte a été créé avec succès. Un email de confirmation a été envoyé à l’adresse que vous avez fournie. Veuillez ouvrir cet email et cliquer sur le lien “Vérifier mon adresse e-mail” pour activer votre compte. Si vous ne recevez pas l’email dans quelques minutes, vérifiez votre dossier spam ou demandez à renvoyer le lien de vérification.",
+            user_response.name
+        ),
+        Some(user_response),
+    ))
+}
+
+pub async fn login(
+    app_state: Data<AppState>,
+    http_request: HttpRequest,
+    Json(login_request): Json<LoginRequest>,
+) -> Result<impl Responder, AppError> {
+    let user = users::Entity::find_by_email(login_request.email)
+        .one(&app_state.db_pool)
+        .await?
+        .ok_or_else(|| AppError::unauthorized(   
+    "Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe, puis réessayer.",
+))?;
+
+    hash::check(login_request.password, user.clone().password)?;
+
+    Identity::login(
+        &http_request.extensions(),
+        user.id.clone().to_string().into(),
+    )
+    .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
+
+    let user_response = UserResponse::from(user);
+    Ok(ApiResponse::ok(
+        format!(
+            "Connexion réussie. Bienvenue, {}, sur votre espace utilisateur.",
             user_response.name
         ),
         Some(user_response),
