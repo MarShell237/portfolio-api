@@ -3,7 +3,9 @@ use crate::{
     errors::AppError, helpers::hash,
 };
 use entities::{roles, users, users_roles};
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseConnection};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseConnection, EntityTrait,
+};
 
 pub async fn assign_role<C>(
     user_id: i64,
@@ -42,11 +44,11 @@ pub async fn create_user(
     Ok(user)
 }
 
-pub async fn find_user_by_email(
-    email: &str,
+pub async fn find_user_by_id(
+    user_id: i64,
     db_pool: &DatabaseConnection,
 ) -> Result<users::Model, AppError> {
-    users::Entity::find_by_email(email)
+    users::Entity::find_by_id(user_id)
         .one(db_pool)
         .await?
         .ok_or_else(|| AppError::not_found("User not found"))

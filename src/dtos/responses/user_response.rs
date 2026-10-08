@@ -28,7 +28,7 @@ impl From<users::Model> for UserResponse {
             deleted_at: user.deleted_at,
             created_at: user.created_at,
             updated_at: user.updated_at,
-            role: "a remplir".to_string(),
+            role: "VISITOR".to_string(),
         }
     }
 }
