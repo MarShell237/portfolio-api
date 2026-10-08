@@ -1,7 +1,11 @@
-use crate::handlers::{
-    auth_handlers, hello_handler, post_handlers, project_handlers, tag_handlers,
+use crate::{
+    handlers::{auth_handlers, hello_handler, post_handlers, project_handlers, tag_handlers},
+    middlewares,
 };
-use actix_web::web::{ServiceConfig, get, post, scope};
+use actix_web::{
+    middleware::from_fn,
+    web::{ServiceConfig, delete, get, post, scope},
+};
 
 pub fn config(config: &mut ServiceConfig) {
     config.route("/", get().to(hello_handler::hello)).service(
@@ -10,6 +14,15 @@ pub fn config(config: &mut ServiceConfig) {
                 scope("users")
                     .route("register", post().to(auth_handlers::register))
                     .route("login", post().to(auth_handlers::login)),
+            )
+            .service(
+                scope("auth")
+                    .wrap(from_fn(middlewares::auth::auth))
+                    .service(
+                        scope("users")
+                            .route("logout", delete().to(auth_handlers::logout))
+                            .route("protected", get().to(auth_handlers::protected)),
+                    ),
             )
             .service(
                 scope("tags")

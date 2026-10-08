@@ -5,6 +5,7 @@ mod enums;
 mod errors;
 mod handlers;
 mod helpers;
+mod middlewares;
 mod repositories;
 
 use actix_cors::Cors;

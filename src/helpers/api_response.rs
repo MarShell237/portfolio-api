@@ -143,3 +143,11 @@ impl<T: Serialize> Responder for ApiResponse<T> {
             .json(self)
     }
 }
+
+impl<T: Serialize> ApiResponse<T> {
+    pub fn into_http_response(self) -> HttpResponse {
+        HttpResponse::build(self.status)
+            .content_type(ContentType::json())
+            .json(self)
+    }
+}

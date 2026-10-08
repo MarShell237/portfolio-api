@@ -4,7 +4,7 @@ use crate::{
     repositories::user_repositories,
 };
 use actix_identity::Identity;
-use actix_web::{HttpMessage, HttpRequest, Responder, web::Data};
+use actix_web::{HttpMessage, HttpRequest, Responder, web::{Data, ReqData}};
 use actix_web_validator::Json;
 use entities::users;
 
@@ -47,8 +47,8 @@ pub async fn login(
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| AppError::unauthorized(   
-    "Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe, puis réessayer.",
-))?;
+            "Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe, puis réessayer.",
+        ))?;
 
     hash::check(login_request.password, user.clone().password)?;
 
@@ -66,4 +66,15 @@ pub async fn login(
         ),
         Some(user_response),
     ))
+}
+
+pub async fn logout(user: Option<Identity>) -> Result<impl Responder, AppError>{
+    if let Some(user) = user {
+        user.logout();
+    }
+    Ok(ApiResponse::ok("Vous avez été déconnecté de votre session avec success.", None::<()>))
+}
+
+pub async fn protected(user: ReqData<String>) -> impl Responder {
+    ApiResponse::ok(format!("Bonjour {}, bienvenue !", user.into_inner()), None::<()>)
 }
