@@ -5,7 +5,7 @@ use actix_web::{
 };
 use actix_web_validator::Json;
 use entities::users;
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, ModelTrait};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set};
 
 use crate::{
     dtos::{
@@ -81,9 +81,8 @@ pub async fn destroy(
         &app_state.db_pool,
     )
     .await?;
-    let session = user_session.ok_or_else(|| {
-        AppError::unauthorized("Authentification requise.")
-    })?;
+    let session =
+        user_session.ok_or_else(|| AppError::unauthorized("Authentification requise."))?;
     session.logout();
     let mut user_active_model: users::ActiveModel = user.into();
     user_active_model.deleted_at = Set(Some(chrono::Utc::now().naive_utc()));
@@ -91,8 +90,5 @@ pub async fn destroy(
         .update(&app_state.db_pool)
         .await
         .map_err(AppError::from)?;
-    Ok(ApiResponse::ok(
-        "Compte supprimé avec succès.",
-        None::<()>,
-    ))
+    Ok(ApiResponse::ok("Compte supprimé avec succès.", None::<()>))
 }
