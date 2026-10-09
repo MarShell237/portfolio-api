@@ -81,7 +81,10 @@ pub async fn destroy(
         &app_state.db_pool,
     )
     .await?;
-    user_session.unwrap().logout();
+    let session = user_session.ok_or_else(|| {
+        AppError::unauthorized("Authentification requise.")
+    })?;
+    session.logout();
     let mut user_active_model: users::ActiveModel = user.into();
     user_active_model.deleted_at = Set(Some(chrono::Utc::now().naive_utc()));
     let _new_user = user_active_model
