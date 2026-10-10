@@ -1,6 +1,8 @@
 use entities::users;
-use sea_orm::prelude::DateTime;
+use sea_orm::{ConnectionTrait, DatabaseConnection, prelude::DateTime};
 use serde::Serialize;
+
+use crate::{errors::AppError, repositories::user_repositories};
 
 #[derive(Serialize)]
 pub struct UserResponse {
@@ -16,9 +18,16 @@ pub struct UserResponse {
     pub role: String,
 }
 
-impl From<users::Model> for UserResponse {
-    fn from(user: users::Model) -> Self {
-        Self {
+impl UserResponse {
+    pub async fn from_user(
+        user: users::Model,
+        db_pool: &DatabaseConnection,
+    ) -> Result<Self, AppError>
+// where
+        // C: ConnectionTrait,
+    {
+        let role = user_repositories::get_role(user.id, db_pool).await?;
+        Ok(Self {
             id: user.id,
             picture: user.picture,
             name: user.name,
@@ -28,7 +37,7 @@ impl From<users::Model> for UserResponse {
             deleted_at: user.deleted_at,
             created_at: user.created_at,
             updated_at: user.updated_at,
-            role: "VISITOR".to_string(),
-        }
+            role: role.name,
+        })
     }
 }

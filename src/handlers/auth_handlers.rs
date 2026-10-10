@@ -23,7 +23,7 @@ pub async fn register(
         .await?;
     let user: users::Model =
         user_repositories::create_user(register_request, &app_state.db_pool).await?;
-    let user_response = UserResponse::from(user);
+    let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
     Identity::login(
         &http_request.extensions(),
         user_response.id.clone().to_string().into(),
@@ -58,7 +58,7 @@ pub async fn login(
     )
     .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
 
-    let user_response = UserResponse::from(user);
+    let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
     Ok(ApiResponse::ok(
         format!(
             "Connexion réussie. Bienvenue, {}, sur votre espace utilisateur.",
@@ -78,6 +78,6 @@ pub async fn logout(user: Option<Identity>) -> Result<impl Responder, AppError>{
 
 pub async fn connected(user_id: ReqData<String>, app_state: Data<AppState>) -> Result<impl Responder, AppError> {
     let user = user_repositories::find_user_by_id(user_id.into_inner().parse().unwrap(), &app_state.db_pool).await?;
-    let user_response = UserResponse::from(user);
+    let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
     Ok(ApiResponse::ok("Utilisateur connecté récupéré avec succès.", Some(user_response)))
 }

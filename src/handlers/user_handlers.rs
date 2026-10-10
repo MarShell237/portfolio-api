@@ -41,7 +41,7 @@ pub async fn show(
         ));
     }
 
-    let user_response = UserResponse::from(user);
+    let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
     Ok(ApiResponse::ok(
         "Utilisateur récupéré avec succès.",
         Some(user_response),
@@ -64,7 +64,7 @@ pub async fn update(
         .update(&app_state.db_pool)
         .await
         .map_err(AppError::from)?;
-    let user_response = UserResponse::from(new_user);
+    let user_response = UserResponse::from_user(new_user, &app_state.db_pool).await?;
     Ok(ApiResponse::ok(
         "Compte mis à jour avec succès.",
         Some(user_response),
