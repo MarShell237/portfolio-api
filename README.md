@@ -42,3 +42,4 @@ sea-orm-cli migrate generate []_seeder -d seeders
 ```bash
 sea-orm-cli migrate fresh -d migrations ; sea-orm-cli migrate up -d seeders
 ```
+# Fécondé par la haine de MarShell
