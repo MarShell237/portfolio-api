@@ -1,5 +1,5 @@
 use crate::helpers::api_response::ApiResponse;
-use actix_web::{HttpResponse, ResponseError, http::StatusCode};
+use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use sea_orm::DbErr;
 use std::{collections::HashMap, fmt};
 
@@ -8,6 +8,7 @@ pub enum AppError {
     NotFound(String),
     Internal(String),
     BadRequest(String),
+    Forbidden(String),
     UnprocessableEntity(HashMap<String, String>),
     Unauthorized(String),
 }
@@ -19,6 +20,10 @@ impl AppError {
 
     pub fn bad_request(msg: impl Into<String>) -> Self {
         Self::BadRequest(msg.into())
+    }
+
+    pub fn forbidden(msg: impl Into<String>) -> Self {
+        Self::Forbidden(msg.into())
     }
 
     pub fn internal(msg: impl Into<String>) -> Self {
@@ -40,6 +45,7 @@ impl fmt::Display for AppError {
             AppError::NotFound(msg)
             | AppError::Internal(msg)
             | AppError::BadRequest(msg)
+            | AppError::Forbidden(msg)
             | AppError::Unauthorized(msg) => {
                 write!(f, "{}", msg)
             }
@@ -90,6 +96,7 @@ impl ResponseError for AppError {
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
             AppError::Internal(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::BadRequest(_) => StatusCode::BAD_REQUEST,
+            AppError::Forbidden(_) => StatusCode::FORBIDDEN,
             AppError::UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
             AppError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
         }
@@ -104,6 +111,9 @@ impl ResponseError for AppError {
                 .json(ApiResponse::<()>::internal_server_error(msg)),
             AppError::BadRequest(msg) => {
                 HttpResponse::BadRequest().json(ApiResponse::<()>::bad_request(msg))
+            }
+            AppError::Forbidden(msg) => {
+                HttpResponse::Forbidden().json(ApiResponse::<()>::forbidden(msg))
             }
             AppError::Unauthorized(msg) => {
                 HttpResponse::Unauthorized().json(ApiResponse::<()>::unauthorized(msg))
