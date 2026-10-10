@@ -65,7 +65,7 @@ where
 {
     let count = users::Entity::find_by_id(user_id)
         .find_also_related(roles::Entity)
-        .filter(roles::Column::Name.eq(user_role.into()))
+        .filter(roles::COLUMN.name.eq(user_role.into()))
         .count(db_pool)
         .await?;
 
@@ -88,4 +88,18 @@ pub async fn get_role(
         .ok_or_else(|| AppError::not_found("Aucun rôle trouvé pour cet utilisateur."))?;
 
     Ok(role)
+}
+
+pub async fn get_first_admin(db_pool: &DatabaseConnection) -> Result<users::Model, AppError>
+// where
+    // C: ConnectionTrait,
+{
+    let role_str: &'static str = UserRole::ADMIN.into();
+    users::Entity::find()
+        .find_also_related(roles::Entity)
+        .filter(roles::COLUMN.name.eq(role_str))
+        .one(db_pool)
+        .await?
+        .map(|(user, _role)| user)
+        .ok_or_else(|| AppError::not_found("Admin not found"))
 }
