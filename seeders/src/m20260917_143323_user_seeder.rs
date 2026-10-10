@@ -20,9 +20,9 @@ impl MigrationTrait for Migration {
         let visitors_model = users::Entity::insert_many(visitors)
             .exec_with_returning(db)
             .await?;
-        let _ = visitors_model
-            .iter()
-            .map(async |v| user_repositories::assign_role(v.id, UserRole::VISITOR, db).await);
+        for v in &visitors_model {
+            let _ = user_repositories::assign_role(v.id, UserRole::VISITOR, db).await;
+        }
         Ok(())
     }
 
