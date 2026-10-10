@@ -50,7 +50,6 @@ pub async fn find_user_by_id(
     db_pool: &DatabaseConnection,
 ) -> Result<users::Model, AppError> {
     users::Entity::find_by_id(user_id)
-        .filter(users::COLUMN.deleted_at.is_null())
         .one(db_pool)
         .await?
         .ok_or_else(|| AppError::not_found("User not found"))
