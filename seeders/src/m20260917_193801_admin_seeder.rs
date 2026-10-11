@@ -27,7 +27,7 @@ impl MigrationTrait for Migration {
             name: Set(config::ADMIN_NAME.clone()),
             email: Set(config::ADMIN_EMAIL.clone()),
             phone: Set(config::ADMIN_PHONE.clone()),
-            email_verified_at: NotSet,
+            email_verified_at: Set(Some(chrono::Utc::now().naive_utc())),
             password: Set(hash::make(config::ADMIN_PASSWORD.clone()).unwrap()),
             deleted_at: NotSet,
             created_at: NotSet,

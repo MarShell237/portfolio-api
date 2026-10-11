@@ -3150,6 +3150,7 @@ dependencies = [
 name = "seeders"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "entities",
  "factories",
  "fake 3.1.0",

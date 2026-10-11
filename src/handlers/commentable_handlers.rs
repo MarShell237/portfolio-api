@@ -38,5 +38,8 @@ pub async fn store(
     )
     .await?;
     let comment_response = CommentResponse::from(comment);
-    Ok(ApiResponse::ok("Commentaire créé", Some(comment_response)))
+    Ok(ApiResponse::ok(
+        "Votre commentaire a été ajouté avec succès !",
+        Some(comment_response),
+    ))
 }

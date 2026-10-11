@@ -16,6 +16,7 @@ factories = { path = "../factories" }
 portfolio_api = { path = ".." }
 sea-orm = { version = "2.0.0" }
 fake = "3.0"
+chrono = "0.4.45"
 
 [dependencies.sea-orm-migration]
 features = [
