@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                     .col(string("name"))
                     .col(string("email").unique_key())
                     .col(string("phone").unique_key())
-                    .col(string("email_verified_at").null())
+                    .col(timestamp("email_verified_at").null())
                     .col(string("password"))
                     .col(timestamp("deleted_at").null())
                     .col(timestamp("created_at").extra("DEFAULT CURRENT_TIMESTAMP"))
