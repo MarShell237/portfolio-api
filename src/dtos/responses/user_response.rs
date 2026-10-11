@@ -1,5 +1,5 @@
 use entities::users;
-use sea_orm::{ConnectionTrait, DatabaseConnection, prelude::DateTime};
+use sea_orm::{DatabaseConnection, prelude::DateTime};
 use serde::Serialize;
 
 use crate::{errors::AppError, repositories::user_repositories};

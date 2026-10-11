@@ -4,8 +4,8 @@ use crate::{
 };
 use entities::{roles, users, users_roles};
 use sea_orm::{
-    ActiveModelTrait, ActiveValue::Set, ColumnTrait, ConnectionTrait, DatabaseConnection,
-    EntityTrait, ModelTrait, PaginatorTrait, QueryFilter, QuerySelect,
+    ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseConnection, EntityTrait,
+    ModelTrait, PaginatorTrait, QueryFilter,
 };
 
 pub async fn assign_role<C>(

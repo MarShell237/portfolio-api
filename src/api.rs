@@ -1,6 +1,7 @@
 use crate::{
     handlers::{
-        auth_handlers, hello_handler, post_handlers, project_handlers, tag_handlers, user_handlers,
+        auth_handlers, commentable_handlers, hello_handler, post_handlers, project_handlers,
+        tag_handlers, user_handlers,
     },
     middlewares,
 };
@@ -27,6 +28,14 @@ pub fn config(config: &mut ServiceConfig) {
                             .route("connected", get().to(auth_handlers::connected))
                             .route("", patch().to(user_handlers::update))
                             .route("", delete().to(user_handlers::destroy)),
+                    )
+                    .service(
+                        scope("verified")
+                            .wrap(from_fn(middlewares::verified::verified))
+                            .service(scope("comments").route(
+                                "{commentable_type}/{commentable_id}",
+                                post().to(commentable_handlers::store),
+                            )),
                     ),
             )
             .service(
