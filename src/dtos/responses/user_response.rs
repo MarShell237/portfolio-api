@@ -11,7 +11,7 @@ pub struct UserResponse {
     pub name: String,
     pub email: String,
     pub phone: String,
-    pub email_verified_at: Option<String>,
+    pub email_verified_at: Option<DateTime>,
     pub deleted_at: Option<DateTime>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
