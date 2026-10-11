@@ -49,12 +49,12 @@ pub async fn show(
 }
 
 pub async fn update(
-    user_id: ReqData<String>,
+    user_id: ReqData<i64>,
     Json(request): Json<UpdateUserRequest>,
     app_state: Data<AppState>,
 ) -> Result<impl Responder, AppError> {
     let user = user_repositories::find_user_by_id(
-        user_id.into_inner().parse().unwrap(),
+        *user_id,
         &app_state.db_pool,
     )
     .await?;
@@ -72,12 +72,12 @@ pub async fn update(
 }
 
 pub async fn destroy(
-    user_id: ReqData<String>,
+    user_id: ReqData<i64>,
     user_session: Option<Identity>,
     app_state: Data<AppState>,
 ) -> Result<impl Responder, AppError> {
     let user = user_repositories::find_user_by_id(
-        user_id.into_inner().parse().unwrap(),
+        *user_id,
         &app_state.db_pool,
     )
     .await?;

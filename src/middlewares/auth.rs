@@ -13,7 +13,9 @@ pub async fn auth(
     req: ServiceRequest,
     next: Next<BoxBody>,
 ) -> Result<ServiceResponse<BoxBody>, actix_web::Error> {
-    let user_id = identity.and_then(|identity| identity.id().ok());
+    let user_id = identity
+        .and_then(|identity| identity.id().ok())
+        .and_then(|id_str| id_str.parse::<i64>().ok());
 
     match user_id {
         Some(user_id) => {

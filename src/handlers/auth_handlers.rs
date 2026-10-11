@@ -76,8 +76,8 @@ pub async fn logout(user: Option<Identity>) -> Result<impl Responder, AppError>{
     Ok(ApiResponse::ok("Vous avez été déconnecté de votre session avec succès.", None::<()>))
 }
 
-pub async fn connected(user_id: ReqData<String>, app_state: Data<AppState>) -> Result<impl Responder, AppError> {
-    let user = user_repositories::find_user_by_id(user_id.into_inner().parse().unwrap(), &app_state.db_pool).await?;
+pub async fn connected(user_id: ReqData<i64>, app_state: Data<AppState>) -> Result<impl Responder, AppError> {
+    let user = user_repositories::find_user_by_id(*user_id, &app_state.db_pool).await?;
     let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
     Ok(ApiResponse::ok("Utilisateur connecté récupéré avec succès.", Some(user_response)))
 }
