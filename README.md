@@ -42,4 +42,14 @@ sea-orm-cli migrate generate []_seeder -d seeders
 ```bash
 sea-orm-cli migrate fresh -d migrations ; sea-orm-cli migrate up -d seeders
 ```
+### requetes http avec xh
+- se login
+```bash
+xh --session=my-session POST http://127.0.0.1:8080/api/v2/users/login email=user@example.com password=user@example.com
+```
+
+- utiliser la session sur une route proteger par l'authentification
+```bash
+xh --session=my-session VERBE_HTTP http://127.0.0.1:8080/api/v2/auth/[url] 
+```
 # Fécondé par la haine de MarShell

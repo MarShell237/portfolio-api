@@ -14,15 +14,11 @@ pub async fn verified(
     req: ServiceRequest,
     next: Next<BoxBody>,
 ) -> Result<ServiceResponse<BoxBody>, actix_web::Error> {
-    let user_id_str = req
+    let user_id = req
         .extensions()
-        .get::<String>()
+        .get::<i64>()
         .cloned()
         .ok_or_else(|| AppError::unauthorized("Authentification requise."))?;
-
-    let user_id = user_id_str
-        .parse::<i64>()
-        .map_err(|_| AppError::unauthorized("Identifiant utilisateur invalide."))?;
 
     let app_state = req
         .app_data::<web::Data<AppState>>()

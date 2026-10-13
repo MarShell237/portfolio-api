@@ -16,23 +16,23 @@ use crate::{
 
 pub async fn store(
     Json(request): Json<CommentRequest>,
-    commentable_type: Path<String>,
-    commentable_id: Path<i64>,
+    path: Path<(String, i64)>,
     user_id: ReqData<i64>,
     app_state: Data<AppState>,
 ) -> Result<impl Responder, AppError> {
+    let (commentable_type, commentable_id) = path.into_inner();
     CommentableEnum::validate_commentable(
         commentable_type.as_str(),
-        *commentable_id,
+        commentable_id,
         &app_state.db_pool,
     )
     .await?;
 
-    let _admin = user_repositories::get_first_admin(&app_state.db_pool).await?;
+    let admin = user_repositories::get_first_admin(&app_state.db_pool).await?;
     let comment = comment_repositories::create(
         *user_id,
-        commentable_type.into_inner(),
-        commentable_id.into_inner(),
+        commentable_type,
+        commentable_id,
         request.content,
         &app_state.db_pool,
     )
