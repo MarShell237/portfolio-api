@@ -1,18 +1,70 @@
+use actix_identity::Identity;
 use actix_web::{
     Responder,
-    web::{Data, Path, ReqData},
+    web::{Data, Path, Query, ReqData},
 };
 use actix_web_validator::Json;
+use sea_orm::DatabaseConnection;
 
 use crate::{
     dtos::{
-        requests::comment_request::CommentRequest, responses::comment_response::CommentResponse,
+        requests::comment_request::CommentRequest,
+        responses::{comment_meta::CommentMeta, comment_response::CommentResponse},
     },
     enums::commentable_enum::CommentableEnum,
     errors::AppError,
-    helpers::{api_response::ApiResponse, app_state::AppState},
+    helpers::{api_response::ApiResponse, app_state::AppState, pagination_meta::PaginationParams},
     repositories::{comment_repositories, user_repositories},
 };
+
+pub async fn index(
+    path: Path<(String, i64)>,
+    query: Query<PaginationParams>,
+    app_state: Data<AppState>,
+) -> Result<impl Responder, AppError> {
+    let (commentable_type, commentable_id) = path.into_inner();
+    CommentableEnum::validate_commentable(
+        commentable_type.as_str(),
+        commentable_id,
+        &app_state.db_pool,
+    )
+    .await?;
+    let (comments, meta) = comment_repositories::get_comments_of_commentable(
+        commentable_type,
+        commentable_id,
+        query.page.unwrap_or(1),
+        &app_state.db_pool,
+    )
+    .await?;
+    let comments_response: Vec<CommentResponse> =
+        comments.into_iter().map(CommentResponse::from).collect();
+    Ok(ApiResponse::ok_with_pagination(
+        "commentaires racines recuperer avec succes.",
+        Some(comments_response),
+        meta,
+    ))
+}
+
+pub async fn get_comment_meta(
+    comment_id: Path<i64>,
+    session: Option<Identity>,
+    app_state: Data<AppState>,
+) -> Result<impl Responder, AppError> {
+    let user_id = session
+        .and_then(|identity| identity.id().ok())
+        .and_then(|id_str| id_str.parse::<i64>().ok())
+        .unwrap_or(-1);
+    let comment_meta = comment_repositories::get_comment_meta(
+        comment_id.into_inner(),
+        user_id,
+        &app_state.db_pool,
+    )
+    .await?;
+    Ok(ApiResponse::ok(
+        "métadonnées du commentaire récupérées avec succès",
+        Some(comment_meta),
+    ))
+}
 
 pub async fn store(
     Json(request): Json<CommentRequest>,

@@ -1,6 +1,6 @@
 use crate::{
     errors::AppError,
-    repositories::{comment_repositories, post_repositories, project_repositories},
+    repositories::{post_repositories, project_repositories},
 };
 use sea_orm::DatabaseConnection;
 use sea_orm::entity::prelude::*;
@@ -14,8 +14,8 @@ pub enum CommentableEnum {
     Project,
     #[sea_orm(string_value = "post")]
     Post,
-    #[sea_orm(string_value = "comment")]
-    Comment,
+    // #[sea_orm(string_value = "comment")]
+    // Comment,
 }
 
 impl CommentableEnum {
@@ -27,7 +27,7 @@ impl CommentableEnum {
         let commentable_enum = match commentable_type {
             "project" => Self::Project,
             "post" => Self::Post,
-            "comment" => Self::Comment,
+            // "comment" => Self::Comment,
             _ => {
                 return Err(AppError::bad_request(format!(
                     "Type de ressource invalide [{}]",
@@ -42,10 +42,9 @@ impl CommentableEnum {
             }
             Self::Post => {
                 post_repositories::find_or_fail(commentable_id, db_pool).await?;
-            }
-            Self::Comment => {
-                comment_repositories::find_or_fail(commentable_id, db_pool).await?;
-            }
+            } // Self::Comment => {
+              //     comment_repositories::find_or_fail(commentable_id, db_pool).await?;
+              // }
         }
 
         Ok(())

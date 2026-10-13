@@ -69,6 +69,17 @@ pub fn config(config: &mut ServiceConfig) {
                     .route("{post_id}/metrics", get().to(post_handlers::metrics))
                     .route("{post_id}/tags", get().to(post_handlers::get_tags))
                     .route("{post_id}/adjacent", get().to(post_handlers::adjacent)),
+            )
+            .service(
+                scope("comments")
+                    .route(
+                        "{comment_id}/meta",
+                        get().to(commentable_handlers::get_comment_meta),
+                    )
+                    .route(
+                        "{commentable_type}/{commentable_id}",
+                        get().to(commentable_handlers::index),
+                    ),
             ),
     );
 }
