@@ -2,7 +2,7 @@ use entities::users;
 use fake::{
     Dummy, Fake, Faker,
     faker::{
-        internet::fr_fr::{Password, SafeEmail, Username},
+        internet::fr_fr::{SafeEmail, Username},
         phone_number::fr_fr::PhoneNumber,
     },
 };
@@ -17,8 +17,6 @@ pub struct UserFactory {
     pub email: String,
     #[dummy(faker = "PhoneNumber()")]
     pub phone: String,
-    #[dummy(faker = "Password(8..12)")]
-    pub password: String,
 }
 
 pub fn create() -> users::ActiveModel {
@@ -30,7 +28,7 @@ pub fn create() -> users::ActiveModel {
         email: Set(user_factory.email),
         phone: Set(user_factory.phone),
         email_verified_at: NotSet,
-        password: Set(hash::make(user_factory.password).unwrap()),
+        password: Set(hash::make("password".to_string()).unwrap()),
         deleted_at: NotSet,
         created_at: NotSet,
         updated_at: NotSet,

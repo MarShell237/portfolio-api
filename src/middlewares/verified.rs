@@ -32,7 +32,7 @@ pub async fn verified(
 
     if user.email_verified_at.is_none() {
         return Err(AppError::forbidden(
-            "Veuillez vérifier votre adresse e-mail pour accéder à cette ressource.",
+            "Votre adresse e-mail n'a pas encore été vérifiée. Pour des raisons de sécurité et pour accéder à cette fonctionnalité, veuillez consulter votre boîte de réception (et vos spams) pour retrouver l'e-mail de confirmation qui vous a été envoyé lors de votre inscription. Si le lien ou le code est expiré, vous pouvez demander l'envoi d'un nouveau lien depuis votre profil.",
         )
         .into());
     }
