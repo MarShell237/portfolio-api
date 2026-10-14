@@ -1,6 +1,6 @@
 use entities::{comments, likes};
 use sea_orm::{
-    ActiveEnum, ActiveModelTrait, ActiveValue::Set, DatabaseConnection, EntityTrait,
+    ActiveEnum, ActiveModelTrait, ActiveValue::Set, DatabaseConnection, EntityTrait, ModelTrait,
     PaginatorTrait, QueryFilter,
 };
 
@@ -107,6 +107,26 @@ pub async fn create(
     .map_err(AppError::from)
 }
 
+pub async fn create_sub_comment(
+    user_id: i64,
+    comment_id: i64,
+    content: String,
+    db_pool: &DatabaseConnection,
+) -> Result<comments::Model, AppError> {
+    let comment = find_or_fail(comment_id, db_pool).await?;
+    comments::ActiveModel {
+        commenter_id: Set(user_id),
+        commentable_id: Set(comment.commentable_id),
+        commentable_type: Set(comment.commentable_type),
+        parent_id: Set(Some(comment_id)),
+        content: Set(content),
+        ..Default::default()
+    }
+    .insert(db_pool)
+    .await
+    .map_err(AppError::from)
+}
+
 pub async fn get_children_of_comments(
     comment_id: i64,
     page: u64,
@@ -116,4 +136,12 @@ pub async fn get_children_of_comments(
         .filter(comments::COLUMN.parent_id.eq(comment_id))
         .paginate(db_pool, 5);
     Ok(PaginationMeta::paginate(&paginator, page).await?)
+}
+
+pub async fn delete(
+    comment: comments::Model,
+    db_pool: &DatabaseConnection,
+) -> Result<(), AppError> {
+    let _ = comment.delete(db_pool).await.map_err(AppError::from);
+    Ok(())
 }

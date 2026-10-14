@@ -1,6 +1,6 @@
 use crate::{
     handlers::{
-        auth_handlers, comment_handler, commentable_handlers, hello_handler, post_handlers,
+        auth_handlers, comment_handlers, commentable_handlers, hello_handler, post_handlers,
         project_handlers, tag_handlers, user_handlers,
     },
     middlewares,
@@ -32,10 +32,15 @@ pub fn config(config: &mut ServiceConfig) {
                     .service(
                         scope("verified")
                             .wrap(from_fn(middlewares::verified::verified))
-                            .service(scope("comments").route(
-                                "{commentable_type}/{commentable_id}",
-                                post().to(commentable_handlers::store),
-                            )),
+                            .service(
+                                scope("comments")
+                                    .route(
+                                        "{commentable_type}/{commentable_id}",
+                                        post().to(commentable_handlers::store),
+                                    )
+                                    .route("{comment_id}", post().to(comment_handlers::store))
+                                    .route("{comment_id}", delete().to(comment_handlers::destroy)),
+                            ),
                     ),
             )
             .service(
@@ -72,10 +77,10 @@ pub fn config(config: &mut ServiceConfig) {
             )
             .service(
                 scope("comments")
-                    .route("{comment_id}", get().to(comment_handler::index))
+                    .route("{comment_id}", get().to(comment_handlers::index))
                     .route(
                         "{comment_id}/meta",
-                        get().to(comment_handler::get_comment_meta),
+                        get().to(comment_handlers::get_comment_meta),
                     )
                     .route(
                         "{commentable_type}/{commentable_id}",

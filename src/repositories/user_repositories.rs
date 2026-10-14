@@ -55,17 +55,14 @@ pub async fn find_user_by_id(
         .ok_or_else(|| AppError::not_found("User not found"))
 }
 
-pub async fn has_role<C>(
-    user_id: i64,
-    user_role: impl Into<String>,
-    db_pool: &C,
-) -> Result<bool, AppError>
+pub async fn has_role<C>(user_id: i64, user_role: UserRole, db_pool: &C) -> Result<bool, AppError>
 where
     C: ConnectionTrait,
 {
+    let role_str: &'static str = user_role.into();
     let count = users::Entity::find_by_id(user_id)
         .find_also_related(roles::Entity)
-        .filter(roles::COLUMN.name.eq(user_role.into()))
+        .filter(roles::COLUMN.name.eq(role_str))
         .count(db_pool)
         .await?;
 
