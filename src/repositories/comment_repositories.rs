@@ -106,3 +106,14 @@ pub async fn create(
     .await
     .map_err(AppError::from)
 }
+
+pub async fn get_children_of_comments(
+    comment_id: i64,
+    page: u64,
+    db_pool: &DatabaseConnection,
+) -> Result<(Vec<comments::Model>, PaginationMeta), AppError> {
+    let paginator = comments::Entity::find()
+        .filter(comments::COLUMN.parent_id.eq(comment_id))
+        .paginate(db_pool, 5);
+    Ok(PaginationMeta::paginate(&paginator, page).await?)
+}

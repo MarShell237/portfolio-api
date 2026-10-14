@@ -1,7 +1,7 @@
 use crate::{
     handlers::{
-        auth_handlers, commentable_handlers, hello_handler, post_handlers, project_handlers,
-        tag_handlers, user_handlers,
+        auth_handlers, comment_handler, commentable_handlers, hello_handler, post_handlers,
+        project_handlers, tag_handlers, user_handlers,
     },
     middlewares,
 };
@@ -72,9 +72,10 @@ pub fn config(config: &mut ServiceConfig) {
             )
             .service(
                 scope("comments")
+                    .route("{comment_id}", get().to(comment_handler::index))
                     .route(
                         "{comment_id}/meta",
-                        get().to(commentable_handlers::get_comment_meta),
+                        get().to(comment_handler::get_comment_meta),
                     )
                     .route(
                         "{commentable_type}/{commentable_id}",
