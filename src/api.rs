@@ -1,7 +1,7 @@
 use crate::{
     handlers::{
-        auth_handlers, comment_handlers, commentable_handlers, hello_handler, post_handlers,
-        project_handlers, tag_handlers, user_handlers,
+        auth_handlers, comment_handlers, commentable_handlers, hello_handler, like_handlers,
+        post_handlers, project_handlers, tag_handlers, user_handlers,
     },
     middlewares,
 };
@@ -40,7 +40,11 @@ pub fn config(config: &mut ServiceConfig) {
                                     )
                                     .route("{comment_id}", post().to(comment_handlers::store))
                                     .route("{comment_id}", delete().to(comment_handlers::destroy)),
-                            ),
+                            )
+                            .service(scope("likes").route(
+                                "{likeable_type}/{likeable_id}",
+                                post().to(like_handlers::like_or_unlike),
+                            )),
                     ),
             )
             .service(

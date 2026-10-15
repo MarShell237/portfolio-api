@@ -87,12 +87,12 @@ pub async fn destroy(
         && !user_repositories::has_role(*user_id, UserRole::ADMIN, &app_state.db_pool).await?
     {
         return Err(AppError::forbidden(
-            "Vous n'etes pas le createur de ce commentaire",
+            "Vous n'êtes pas le créateur de ce commentaire.",
         ));
     }
     comment_repositories::delete(comment, &app_state.db_pool).await?;
     Ok(ApiResponse::ok(
-        "Le commentaire a ete suprimmer avec succes",
+        "Le commentaire a été supprimé avec succès.",
         None::<()>,
     ))
 }
