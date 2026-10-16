@@ -5,5 +5,6 @@ pub mod hello_handler;
 pub mod like_handlers;
 pub mod post_handlers;
 pub mod project_handlers;
+pub mod share_handlers;
 pub mod tag_handlers;
 pub mod user_handlers;

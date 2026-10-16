@@ -1,7 +1,7 @@
 use crate::{
     handlers::{
         auth_handlers, comment_handlers, commentable_handlers, hello_handler, like_handlers,
-        post_handlers, project_handlers, tag_handlers, user_handlers,
+        post_handlers, project_handlers, share_handlers, tag_handlers, user_handlers,
     },
     middlewares,
 };
@@ -44,6 +44,10 @@ pub fn config(config: &mut ServiceConfig) {
                             .service(scope("likes").route(
                                 "{likeable_type}/{likeable_id}",
                                 post().to(like_handlers::like_or_unlike),
+                            ))
+                            .service(scope("shares").route(
+                                "{shareable_type}/{shareable_id}",
+                                post().to(share_handlers::store),
                             )),
                     ),
             )
