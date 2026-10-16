@@ -36,14 +36,12 @@ pub async fn get_paginate(
 }
 
 pub async fn get_pinned(db_pool: &DatabaseConnection) -> Result<Vec<ProjectCollection>, AppError> {
-    let projects = projects::Entity::find()
+    Ok(projects::Entity::find()
         .filter(projects::COLUMN.published_at.is_not_null())
         .filter(projects::COLUMN.is_pinned.eq(true))
         .order_by_desc(projects::COLUMN.id)
         .all(db_pool)
-        .await?;
-
-    Ok(projects
+        .await?
         .into_iter()
         .map(ProjectCollection::from)
         .collect::<Vec<ProjectCollection>>())
@@ -119,8 +117,8 @@ pub async fn get_tags(
     project_id: i64,
     db_pool: &DatabaseConnection,
 ) -> Result<Vec<tags::Model>, AppError> {
-    let project = find_or_fail(project_id, db_pool).await?;
-    project
+    find_or_fail(project_id, db_pool)
+        .await?
         .find_related(tags::Entity)
         .all(db_pool)
         .await

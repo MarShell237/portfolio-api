@@ -20,12 +20,14 @@ where
         .one(db_pool)
         .await?
         .ok_or_else(|| AppError::not_found("Role not found"))?;
-    let user_role = users_roles::ActiveModel {
+    users_roles::ActiveModel {
         user_id: Set(user_id),
         role_id: Set(role.id),
-    };
-    user_role.insert(db_pool).await?;
-    Ok(())
+    }
+    .insert(db_pool)
+    .await
+    .map_err(AppError::from)
+    .map(|_| ())
 }
 
 pub async fn create_user(
@@ -72,25 +74,16 @@ where
 pub async fn get_role(
     user_id: i64,
     db_pool: &DatabaseConnection,
-) -> Result<roles::Model, AppError>
-// where
-    // C: ConnectionTrait,
-{
-    let user = user_repositories::find_user_by_id(user_id, db_pool).await?;
-
-    let role = user
+) -> Result<roles::Model, AppError> {
+    user_repositories::find_user_by_id(user_id, db_pool)
+        .await?
         .find_related(roles::Entity)
         .one(db_pool)
         .await?
-        .ok_or_else(|| AppError::not_found("Aucun rôle trouvé pour cet utilisateur."))?;
-
-    Ok(role)
+        .ok_or_else(|| AppError::not_found("Aucun rôle trouvé pour cet utilisateur."))
 }
 
-pub async fn get_first_admin(db_pool: &DatabaseConnection) -> Result<users::Model, AppError>
-// where
-    // C: ConnectionTrait,
-{
+pub async fn get_first_admin(db_pool: &DatabaseConnection) -> Result<users::Model, AppError> {
     let role_str: &'static str = UserRole::ADMIN.into();
     users::Entity::find()
         .find_also_related(roles::Entity)

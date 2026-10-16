@@ -142,6 +142,9 @@ pub async fn delete(
     comment: comments::Model,
     db_pool: &DatabaseConnection,
 ) -> Result<(), AppError> {
-    let _me = comment.delete(db_pool).await.map_err(AppError::from);
-    Ok(())
+    comment
+        .delete(db_pool)
+        .await
+        .map_err(AppError::from)
+        .map(|_| ())
 }
