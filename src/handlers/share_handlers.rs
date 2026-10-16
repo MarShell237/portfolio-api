@@ -29,7 +29,7 @@ pub async fn store(
     )
     .await?
     {
-        "la ressource a deja ete partager par cet utilisateur"
+        "la ressource a déjà été partagée par cet utilisateur"
     } else {
         share_repositories::store(
             shareable_type,
@@ -39,7 +39,7 @@ pub async fn store(
             &app_state.db_pool,
         )
         .await?;
-        "partage de la ressource par cet utilisateur enregistrer avec succes"
+        "partage de la ressource par cet utilisateur enregistré avec succès"
     };
     Ok(ApiResponse::ok(message, None::<()>))
 }
