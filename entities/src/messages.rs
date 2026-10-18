@@ -13,6 +13,7 @@ pub struct Model {
     pub email: String,
     pub subject: String,
     pub message: String,
+    pub file_path: Option<String>,
     pub read_at: Option<DateTime>,
     pub created_at: DateTime,
     pub updated_at: DateTime,

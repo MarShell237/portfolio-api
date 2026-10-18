@@ -22,6 +22,7 @@ impl MigrationTrait for Migration {
                     .col(string("email"))
                     .col(string("subject"))
                     .col(string("message"))
+                    .col(string("file_path").null())
                     .col(timestamp("read_at").null())
                     .col(timestamp("created_at").extra("DEFAULT CURRENT_TIMESTAMP"))
                     .col(timestamp("updated_at").extra("DEFAULT CURRENT_TIMESTAMP"))
