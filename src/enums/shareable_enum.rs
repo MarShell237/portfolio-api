@@ -2,7 +2,6 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    enums::shareable_enum,
     errors::AppError,
     repositories::{post_repositories, project_repositories},
 };
@@ -20,7 +19,7 @@ pub enum ShareableEnum {
 impl ShareableEnum {
     pub async fn validate_shareable(
         shareable_type: &str,
-        Shareable_id: i64,
+        shareable_id: i64,
         db_pool: &DatabaseConnection,
     ) -> Result<(), AppError> {
         let shareable_enum = match shareable_type {
@@ -36,10 +35,10 @@ impl ShareableEnum {
 
         match shareable_enum {
             ShareableEnum::Project => {
-                project_repositories::find_or_fail(Shareable_id, db_pool).await?;
+                project_repositories::find_or_fail(shareable_id, db_pool).await?;
             }
             ShareableEnum::Post => {
-                post_repositories::find_or_fail(Shareable_id, db_pool).await?;
+                post_repositories::find_or_fail(shareable_id, db_pool).await?;
             }
         }
         Ok(())

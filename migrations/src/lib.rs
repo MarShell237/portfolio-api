@@ -14,6 +14,7 @@ mod m20260917_161024_create_users_permissions_table;
 mod m20260917_161115_create_posts_tags_table;
 mod m20260917_161123_create_projects_tags_table;
 mod m20260917_201146_create_roles_permissions_table;
+mod m20261017_091444_create_messages_table;
 
 pub struct Migrator;
 
@@ -35,6 +36,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260917_161115_create_posts_tags_table::Migration),
             Box::new(m20260917_161123_create_projects_tags_table::Migration),
             Box::new(m20260917_201146_create_roles_permissions_table::Migration),
+            Box::new(m20261017_091444_create_messages_table::Migration),
         ]
     }
 }

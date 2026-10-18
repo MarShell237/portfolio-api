@@ -2,6 +2,7 @@
 
 pub use super::comments::Entity as Comments;
 pub use super::likes::Entity as Likes;
+pub use super::messages::Entity as Messages;
 pub use super::permissions::Entity as Permissions;
 pub use super::posts::Entity as Posts;
 pub use super::posts_tags::Entity as PostsTags;

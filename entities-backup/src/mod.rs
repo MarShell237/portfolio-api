@@ -4,6 +4,7 @@ pub mod prelude;
 
 pub mod comments;
 pub mod likes;
+pub mod messages;
 pub mod permissions;
 pub mod posts;
 pub mod posts_tags;
