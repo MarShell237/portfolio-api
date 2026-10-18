@@ -3,6 +3,7 @@ pub mod comment_handlers;
 pub mod commentable_handlers;
 pub mod hello_handler;
 pub mod like_handlers;
+pub mod message_handlers;
 pub mod post_handlers;
 pub mod project_handlers;
 pub mod share_handlers;
