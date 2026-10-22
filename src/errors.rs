@@ -1,5 +1,5 @@
 use crate::helpers::api_response::ApiResponse;
-use actix_web::{http::StatusCode, HttpResponse, ResponseError};
+use actix_web::{HttpResponse, ResponseError, http::StatusCode};
 use sea_orm::DbErr;
 use std::{collections::HashMap, fmt};
 
@@ -62,25 +62,33 @@ impl From<DbErr> for AppError {
     }
 }
 
+fn handle_validation_errors(errors: validator::ValidationErrors) -> AppError {
+    let mut field_errors = HashMap::new();
+
+    for (field, err_list) in errors.field_errors() {
+        if let Some(first_err) = err_list.first() {
+            let msg = first_err
+                .message
+                .as_ref()
+                .map(|m| m.to_string())
+                .unwrap_or_else(|| format!("Le champ {} est invalide.", field));
+
+            field_errors.insert(field.to_string(), msg);
+        }
+    }
+    AppError::UnprocessableEntity(field_errors)
+}
+
+impl From<validator::ValidationErrors> for AppError {
+    fn from(errors: validator::ValidationErrors) -> Self {
+        handle_validation_errors(errors)
+    }
+}
+
 impl From<actix_web_validator::Error> for AppError {
     fn from(err: actix_web_validator::Error) -> Self {
         match err {
-            actix_web_validator::Error::Validate(errors) => {
-                let mut field_errors = HashMap::new();
-
-                for (field, err_list) in errors.field_errors() {
-                    if let Some(first_err) = err_list.first() {
-                        let msg = first_err
-                            .message
-                            .as_ref()
-                            .map(|m| m.to_string())
-                            .unwrap_or_else(|| format!("Le champ {} est invalide.", field));
-
-                        field_errors.insert(field.to_string(), msg);
-                    }
-                }
-                AppError::UnprocessableEntity(field_errors)
-            }
+            actix_web_validator::Error::Validate(errors) => handle_validation_errors(errors),
             _ => {
                 let mut map = HashMap::new();
                 map.insert("json".to_string(), "Format JSON invalide.".to_string());

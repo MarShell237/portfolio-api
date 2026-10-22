@@ -1,14 +1,12 @@
 use actix_identity::Identity;
+use actix_multipart::form::MultipartForm;
 use actix_web::{
     Responder,
     web::{Data, Path, Query, ReqData},
 };
-use actix_web_validator::Json;
 
 use crate::{
-    dtos::{
-        requests::comment_request::CommentRequest, responses::comment_response::CommentResponse,
-    },
+    dtos::{forms::comment_form::CommentForm, responses::comment_response::CommentResponse},
     enums::user_role::UserRole,
     errors::AppError,
     helpers::{api_response::ApiResponse, app_state::AppState, pagination_meta::PaginationParams},
@@ -57,16 +55,17 @@ pub async fn get_comment_meta(
 }
 
 pub async fn store(
-    Json(request): Json<CommentRequest>,
+    request: MultipartForm<CommentForm>,
     comment_id: Path<i64>,
     user_id: ReqData<i64>,
     app_state: Data<AppState>,
 ) -> Result<impl Responder, AppError> {
+    let (comment_request, attachment) = request.into_inner().validate_and_split()?;
     let admin = user_repositories::get_first_admin(&app_state.db_pool).await?;
     let comment = comment_repositories::create_sub_comment(
         *user_id,
         *comment_id,
-        request.content,
+        comment_request.content,
         &app_state.db_pool,
     )
     .await?;

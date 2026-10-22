@@ -8,5 +8,4 @@ pub struct CommentRequest {
         message = "Le contenu du commentaire ne peut pas dépasser 10 000 caractères.",
     ))]
     pub content: String,
-    // pub attachement: todo!()
 }

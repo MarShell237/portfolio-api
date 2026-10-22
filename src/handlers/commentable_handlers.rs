@@ -1,13 +1,12 @@
+use actix_multipart::form::MultipartForm;
 use actix_web::{
     Responder,
     web::{Data, Path, Query, ReqData},
 };
-use actix_web_validator::Json;
+use validator::Validate;
 
 use crate::{
-    dtos::{
-        requests::comment_request::CommentRequest, responses::comment_response::CommentResponse,
-    },
+    dtos::{forms::comment_form::CommentForm, responses::comment_response::CommentResponse},
     enums::commentable_enum::CommentableEnum,
     errors::AppError,
     helpers::{api_response::ApiResponse, app_state::AppState, pagination_meta::PaginationParams},
@@ -43,7 +42,7 @@ pub async fn index(
 }
 
 pub async fn store(
-    Json(request): Json<CommentRequest>,
+    request: MultipartForm<CommentForm>,
     path: Path<(String, i64)>,
     user_id: ReqData<i64>,
     app_state: Data<AppState>,
@@ -55,13 +54,15 @@ pub async fn store(
         &app_state.db_pool,
     )
     .await?;
+    let (comment_request, attachment) = request.into_inner().validate_and_split()?;
+    comment_request.validate()?;
 
     let admin = user_repositories::get_first_admin(&app_state.db_pool).await?;
     let comment = comment_repositories::create(
         *user_id,
         commentable_type,
         commentable_id,
-        request.content,
+        comment_request.content,
         &app_state.db_pool,
     )
     .await?;
