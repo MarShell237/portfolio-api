@@ -1,5 +1,6 @@
 pub use sea_orm_migration::prelude::*;
 
+mod config;
 mod m20260829_122936_tag_seeder;
 mod m20260902_214327_project_seeder;
 mod m20260904_161323_post_seeder;

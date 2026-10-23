@@ -1,4 +1,12 @@
-pub mod comment_meta;
+pub mod collections;
+pub mod comment_meta_response;
 pub mod comment_response;
 pub mod message_response;
+pub mod post_adjacent_response;
+pub mod post_metrics_response;
+pub mod post_response;
+pub mod project_adjacent_response;
+pub mod project_metrics_response;
+pub mod project_response;
+pub mod tag_response;
 pub mod user_response;

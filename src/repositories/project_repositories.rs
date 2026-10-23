@@ -5,8 +5,10 @@ use sea_orm::{
 };
 
 use crate::{
-    dtos::project_dtos::{
-        ProjectAdjacent, ProjectCollection, ProjectMetrics, ProjectsAdjacentResponse,
+    dtos::responses::{
+        collections::project_collection::ProjectCollection,
+        project_adjacent_response::{ProjectAdjacentResponse, ProjectsAdjacentResponse},
+        project_metrics_response::ProjectMetricsResponse,
     },
     enums::{
         commentable_enum::CommentableEnum, likeable_enum::LikeableEnum,
@@ -74,7 +76,7 @@ pub async fn find_or_fail(
 pub async fn get_metrics(
     project_id: i64,
     db_pool: &DatabaseConnection,
-) -> Result<ProjectMetrics, AppError> {
+) -> Result<ProjectMetricsResponse, AppError> {
     let comments_count = comments::Entity::find()
         .filter(comments::COLUMN.commentable_id.eq(project_id))
         .filter(
@@ -105,7 +107,7 @@ pub async fn get_metrics(
         .count(db_pool)
         .await?;
 
-    Ok(ProjectMetrics {
+    Ok(ProjectMetricsResponse {
         project_id,
         comments_count,
         likes_count,
@@ -155,7 +157,7 @@ pub async fn adjacent(
         .one(db_pool)
         .await?;
 
-    let prev = prev_model.map(ProjectAdjacent::from);
-    let next = next_model.map(ProjectAdjacent::from);
+    let prev = prev_model.map(ProjectAdjacentResponse::from);
+    let next = next_model.map(ProjectAdjacentResponse::from);
     Ok(ProjectsAdjacentResponse { prev, next })
 }

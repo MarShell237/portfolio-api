@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct CommentMeta {
+pub struct CommentMetaResponse {
     pub likes_count: u64,
     pub comments_count: u64,
     pub is_liked: bool,

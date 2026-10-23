@@ -6,11 +6,6 @@ use sea_orm::{
     RelationTrait,
 };
 
-// a effacer
-pub async fn all(db_pool: &DatabaseConnection) -> Result<Vec<tags::Model>, AppError> {
-    Ok(tags::Entity::find().all(db_pool).await?)
-}
-
 pub async fn find_by_slug_or_fail(
     db_pool: &DatabaseConnection,
     slug: &str,

@@ -1,13 +1,13 @@
 use entities::{users, users_roles};
-use portfolio_api::{
-    config, enums::user_role::UserRole, helpers::hash, repositories::user_repositories,
-};
+use portfolio_api::{enums::user_role::UserRole, helpers::hash, repositories::user_repositories};
 use sea_orm::{
     ActiveModelTrait,
     ActiveValue::{NotSet, Set},
     EntityTrait,
 };
 use sea_orm_migration::prelude::*;
+
+use crate::config;
 
 pub struct Migration;
 

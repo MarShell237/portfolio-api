@@ -4,12 +4,12 @@ use actix_web::{
 };
 
 use crate::{
-    dtos::project_dtos::ProjectResponse,
+    dtos::responses::{project_response::ProjectResponse, tag_response::TagResponse},
     errors::AppError,
+    helpers::pagination_meta::PaginationParams,
     helpers::{api_response::ApiResponse, app_state::AppState},
     repositories::project_repositories,
 };
-use crate::{dtos::tag_dtos::TagResponse, helpers::pagination_meta::PaginationParams};
 
 pub async fn index(
     app_state: Data<AppState>,

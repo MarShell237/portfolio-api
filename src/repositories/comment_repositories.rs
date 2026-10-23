@@ -5,8 +5,9 @@ use sea_orm::{
 };
 
 use crate::{
-    dtos::responses::comment_meta::CommentMeta, enums::likeable_enum::LikeableEnum,
-    errors::AppError, helpers::pagination_meta::PaginationMeta, repositories::user_repositories,
+    dtos::responses::comment_meta_response::CommentMetaResponse,
+    enums::likeable_enum::LikeableEnum, errors::AppError, helpers::pagination_meta::PaginationMeta,
+    repositories::user_repositories,
 };
 
 pub async fn find_or_fail(
@@ -36,7 +37,7 @@ pub async fn get_comment_meta(
     comment_id: i64,
     user_id: i64,
     db_pool: &DatabaseConnection,
-) -> Result<CommentMeta, AppError> {
+) -> Result<CommentMetaResponse, AppError> {
     let likes_count = likes::Entity::find()
         .filter(likes::COLUMN.likeable_id.eq(comment_id))
         .filter(
@@ -79,7 +80,7 @@ pub async fn get_comment_meta(
         .one(db_pool)
         .await?
         .is_some();
-    Ok(CommentMeta {
+    Ok(CommentMetaResponse {
         likes_count,
         comments_count,
         is_liked,
