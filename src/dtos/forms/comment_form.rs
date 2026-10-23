@@ -1,18 +1,18 @@
 use actix_multipart::form::{MultipartForm, tempfile::TempFile, text::Text};
-use validator::{ValidationError, ValidationErrors};
+use validator::{Validate, ValidationError, ValidationErrors};
 
-use crate::dtos::requests::comment_request::CommentRequest;
+use crate::dtos::requests::comment_request::{CommentRequest, CommentRequestValidated};
 
 #[derive(Debug, MultipartForm)]
 pub struct CommentForm {
-    pub content: Text<String>,
+    pub content: Option<Text<String>>,
     pub attachment: Option<TempFile>,
 }
 
 impl CommentForm {
     pub fn validate_and_split(
         self,
-    ) -> Result<(CommentRequest, Option<TempFile>), actix_web_validator::Error> {
+    ) -> Result<(CommentRequestValidated, Option<TempFile>), actix_web_validator::Error> {
         let mut errors = ValidationErrors::new();
         if let Some(ref my_file) = self.attachment {
             if my_file.size > 20 * 1024 * 1024 {
@@ -47,14 +47,22 @@ impl CommentForm {
             }
         }
 
+        let comment_request = CommentRequest {
+            content: self.content.map(|t| t.into_inner()),
+        };
+
+        if let Err(mut val_errs) = comment_request.validate() {
+            for (field, err) in val_errs.errors_mut() {
+                errors.errors_mut().insert(field.clone(), err.clone());
+            }
+        }
+
         if !errors.is_empty() {
             return Err(actix_web_validator::Error::Validate(errors));
         }
 
         Ok((
-            CommentRequest {
-                content: self.content.to_string(),
-            },
+            CommentRequestValidated::from(comment_request),
             self.attachment,
         ))
     }

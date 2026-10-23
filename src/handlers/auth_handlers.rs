@@ -1,7 +1,5 @@
 use crate::{
-    dtos::{requests::login_request::LoginRequest, responses::user_response::UserResponse},
-    helpers::{api_response::ApiResponse, hash},
-    repositories::user_repositories,
+    dtos::{requests::login_request::{LoginRequest, LoginRequestValidated}, responses::user_response::UserResponse}, helpers::{api_response::ApiResponse, hash}, repositories::user_repositories,
 };
 use actix_identity::Identity;
 use actix_web::{HttpMessage, HttpRequest, Responder, web::{Data, ReqData}};
@@ -43,14 +41,14 @@ pub async fn login(
     http_request: HttpRequest,
     Json(login_request): Json<LoginRequest>,
 ) -> Result<impl Responder, AppError> {
-    let user = users::Entity::find_by_email(login_request.email)
+    let login_request_validated = LoginRequestValidated::from(login_request);
+    let user = users::Entity::find_by_email(login_request_validated .email)
         .one(&app_state.db_pool)
         .await?
         .ok_or_else(|| AppError::unauthorized(   
             "Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe, puis réessayer.",
         ))?;
-
-    hash::check(login_request.password, user.clone().password)?;
+    hash::check(login_request_validated.password, user.clone().password)?;
 
     Identity::login(
         &http_request.extensions(),

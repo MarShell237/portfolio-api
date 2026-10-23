@@ -3,7 +3,6 @@ use actix_web::{
     Responder,
     web::{Data, Path, Query, ReqData},
 };
-use validator::Validate;
 
 use crate::{
     dtos::{forms::comment_form::CommentForm, responses::comment_response::CommentResponse},
@@ -55,7 +54,6 @@ pub async fn store(
     )
     .await?;
     let (comment_request, attachment) = request.into_inner().validate_and_split()?;
-    comment_request.validate()?;
 
     let admin = user_repositories::get_first_admin(&app_state.db_pool).await?;
     let comment = comment_repositories::create(
