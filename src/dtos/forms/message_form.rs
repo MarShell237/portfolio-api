@@ -16,7 +16,7 @@ pub struct MessageForm {
 impl MessageForm {
     pub fn validate_and_split(
         self,
-    ) -> Result<(MessageRequestValidated, Option<TempFile>), ValidationErrors> {
+    ) -> Result<(MessageRequestValidated, Option<TempFile>), actix_web_validator::Error> {
         let mut errors = ValidationErrors::new();
         if let Some(ref my_file) = self.attachment {
             if my_file.size > 20 * 1024 * 1024 {
@@ -72,6 +72,10 @@ impl MessageForm {
             for (field, err) in val_errs.errors_mut() {
                 errors.errors_mut().insert(field.clone(), err.clone());
             }
+        }
+
+        if !errors.is_empty() {
+            return Err(actix_web_validator::Error::Validate(errors));
         }
 
         Ok((

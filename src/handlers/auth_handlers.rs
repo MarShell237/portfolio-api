@@ -1,7 +1,8 @@
 use crate::{
-    dtos::{requests::login_request::{LoginRequest, LoginRequestValidated}, responses::user_response::UserResponse}, helpers::{api_response::ApiResponse, hash}, repositories::user_repositories,
+    dtos::{forms::register_form::RegisterForm, requests::login_request::{LoginRequest, LoginRequestValidated}, responses::user_response::UserResponse}, helpers::{api_response::ApiResponse, hash}, repositories::user_repositories,
 };
 use actix_identity::Identity;
+use actix_multipart::form::MultipartForm;
 use actix_web::{HttpMessage, HttpRequest, Responder, web::{Data, ReqData}};
 use actix_web_validator::Json;
 use entities::users;
@@ -14,13 +15,11 @@ use crate::{
 pub async fn register(
     app_state: Data<AppState>,
     http_request: HttpRequest,
-    Json(register_request): Json<RegisterRequest>,
+    request: MultipartForm<RegisterForm>,
 ) -> Result<impl Responder, AppError> {
-    register_request
-        .validate_uniqueness(&app_state.db_pool)
-        .await?;
+    let (register_request_validated, photo) = request.into_inner().validated_and_split(&app_state.db_pool).await?; 
     let user: users::Model =
-        user_repositories::create_user(register_request, &app_state.db_pool).await?;
+        user_repositories::create_user(register_request_validated, &app_state.db_pool).await?;
     let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
     Identity::login(
         &http_request.extensions(),

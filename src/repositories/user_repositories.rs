@@ -1,5 +1,5 @@
 use crate::{
-    dtos::requests::register_request::RegisterRequest, enums::user_role::UserRole,
+    dtos::requests::register_request::RegisterRequestValidated, enums::user_role::UserRole,
     errors::AppError, helpers::hash, repositories::user_repositories,
 };
 use entities::{roles, users, users_roles};
@@ -31,7 +31,7 @@ where
 }
 
 pub async fn create_user(
-    register_request: RegisterRequest,
+    register_request: RegisterRequestValidated,
     db_pool: &DatabaseConnection,
 ) -> Result<users::Model, AppError> {
     let user = users::ActiveModel {
