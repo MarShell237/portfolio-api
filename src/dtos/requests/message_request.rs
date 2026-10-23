@@ -1,9 +1,8 @@
 use regex::Regex;
-use serde::Deserialize;
 use std::sync::LazyLock;
 use validator::Validate;
 
-#[derive(Deserialize, Validate, Debug)]
+#[derive(Validate)]
 pub struct MessageRequest {
     #[validate(
         required(message = "Le champ nom est requis"),

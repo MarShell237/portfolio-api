@@ -1,16 +1,14 @@
 use actix_identity::Identity;
+use actix_multipart::form::MultipartForm;
 use actix_web::{
     Responder,
     web::{Data, Path, ReqData},
 };
-use actix_web_validator::Json;
 use entities::users;
 use sea_orm::{ActiveModelTrait, ActiveValue::Set};
 
 use crate::{
-    dtos::{
-        requests::update_user_request::UpdateUserRequest, responses::user_response::UserResponse,
-    },
+    dtos::{forms::update_user_form::UpdateUserForm, responses::user_response::UserResponse},
     errors::AppError,
     helpers::{api_response::ApiResponse, app_state::AppState},
     repositories::user_repositories,
@@ -50,16 +48,13 @@ pub async fn show(
 
 pub async fn update(
     user_id: ReqData<i64>,
-    Json(request): Json<UpdateUserRequest>,
+    request: MultipartForm<UpdateUserForm>,
     app_state: Data<AppState>,
 ) -> Result<impl Responder, AppError> {
-    let user = user_repositories::find_user_by_id(
-        *user_id,
-        &app_state.db_pool,
-    )
-    .await?;
+    let user = user_repositories::find_user_by_id(*user_id, &app_state.db_pool).await?;
     let mut user_active_model: users::ActiveModel = user.into();
-    user_active_model.name = Set(request.name);
+    let (update_user_request_validated, picture) = request.into_inner().validate_and_split()?;
+    user_active_model.name = Set(update_user_request_validated.name);
     let new_user = user_active_model
         .update(&app_state.db_pool)
         .await
@@ -76,11 +71,7 @@ pub async fn destroy(
     user_session: Option<Identity>,
     app_state: Data<AppState>,
 ) -> Result<impl Responder, AppError> {
-    let user = user_repositories::find_user_by_id(
-        *user_id,
-        &app_state.db_pool,
-    )
-    .await?;
+    let user = user_repositories::find_user_by_id(*user_id, &app_state.db_pool).await?;
     let session =
         user_session.ok_or_else(|| AppError::unauthorized("Authentification requise."))?;
     session.logout();

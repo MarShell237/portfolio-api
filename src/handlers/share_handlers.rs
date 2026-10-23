@@ -5,7 +5,7 @@ use actix_web::{
 use actix_web_validator::Json;
 
 use crate::{
-    dtos::requests::share_request::ShareRequest,
+    dtos::requests::share_request::{ShareRequest, ShareRequestValidated},
     enums::shareable_enum::ShareableEnum,
     errors::AppError,
     helpers::{api_response::ApiResponse, app_state::AppState},
@@ -31,11 +31,12 @@ pub async fn store(
     {
         "la ressource a déjà été partagée par cet utilisateur"
     } else {
+        let share_request_validated = ShareRequestValidated::from(request);
         share_repositories::store(
             shareable_type,
             shareable_id,
             *user_id,
-            request.platform,
+            share_request_validated.platform,
             &app_state.db_pool,
         )
         .await?;

@@ -8,7 +8,7 @@ use actix_web_validator::Json;
 use entities::users;
 
 use crate::{
-    dtos::requests::register_request::RegisterRequest, errors::AppError,
+    errors::AppError,
     helpers::app_state::AppState,
 };
 
@@ -17,7 +17,7 @@ pub async fn register(
     http_request: HttpRequest,
     request: MultipartForm<RegisterForm>,
 ) -> Result<impl Responder, AppError> {
-    let (register_request_validated, photo) = request.into_inner().validated_and_split(&app_state.db_pool).await?; 
+    let (register_request_validated, picture) = request.into_inner().validated_and_split(&app_state.db_pool).await?; 
     let user: users::Model =
         user_repositories::create_user(register_request_validated, &app_state.db_pool).await?;
     let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;

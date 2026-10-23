@@ -1,9 +1,22 @@
-use serde::Deserialize;
 use validator::Validate;
 
-#[derive(Deserialize, Validate, Debug)]
+#[derive(Validate)]
 pub struct UpdateUserRequest {
-    #[validate(length(min = 5, message = "Le nom doit contenir au moins 5 caractères."))]
+    #[validate(
+        required(message = "Le champ nom est requis"),
+        length(min = 5, message = "Le nom doit contenir au moins 5 caractères.")
+    )]
+    pub name: Option<String>,
+}
+
+pub struct UpdateUserRequestValidated {
     pub name: String,
-    // pub photo: Option<String>,
+}
+
+impl From<UpdateUserRequest> for UpdateUserRequestValidated {
+    fn from(value: UpdateUserRequest) -> Self {
+        Self {
+            name: value.name.unwrap(),
+        }
+    }
 }

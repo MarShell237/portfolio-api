@@ -1,7 +1,6 @@
-use serde::Deserialize;
 use validator::Validate;
 
-#[derive(Deserialize, Validate)]
+#[derive(Validate)]
 pub struct CommentRequest {
     #[validate(
         required(message = "Le champ contenu est requis"),
