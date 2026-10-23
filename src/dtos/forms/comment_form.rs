@@ -15,7 +15,7 @@ impl CommentForm {
     ) -> Result<(CommentRequest, Option<TempFile>), actix_web_validator::Error> {
         let mut errors = ValidationErrors::new();
         if let Some(ref my_file) = self.attachment {
-            if my_file.size > 20480 * 1024 {
+            if my_file.size > 20 * 1024 * 1024 {
                 errors.add(
                     "attachment",
                     ValidationError::new("max")
@@ -23,15 +23,25 @@ impl CommentForm {
                 );
             }
 
-            if let Some(ref content_type) = my_file.content_type {
-                let allowed_content_type = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
-                if !allowed_content_type.contains(&content_type.to_string().as_str()) {
-                    errors.add(
+            match my_file.content_type {
+                Some(ref content_type) => {
+                    let allowed_content_type =
+                        ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+                    if !allowed_content_type.contains(&content_type.to_string().as_str()) {
+                        errors.add(
                         "attachment",
                         ValidationError::new("content_type").with_message(
                             "Le fichier joint doit être de type image (.jpg, .jpeg, .png, .gif)."
                                 .into(),
                         ),
+                    );
+                    }
+                }
+                None => {
+                    errors.add(
+                        "attachment",
+                        ValidationError::new("content_type")
+                            .with_message("Le fichier joint est invalide".into()),
                     );
                 }
             }
