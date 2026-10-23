@@ -6,7 +6,11 @@ use validator::Validate;
 pub struct RegisterRequest {
     #[validate(
         required(message = "Le champ nom est requis"),
-        length(min = 5, message = "Le nom doit contenir au moins 5 caractères.")
+        length(
+            min = 5,
+            max = 200,
+            message = "Le nom doit contenir au moins 5 caractères."
+        )
     )]
     pub name: Option<String>,
 
@@ -23,6 +27,7 @@ pub struct RegisterRequest {
         required(message = "Le champ mot de passe est requis"),
         length(
             min = 8,
+            max = 200,
             message = "Le mot de passe doit contenir au moins 8 caractères."
         )
     )]

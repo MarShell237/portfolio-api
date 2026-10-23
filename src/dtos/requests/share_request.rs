@@ -5,7 +5,11 @@ use validator::Validate;
 pub struct ShareRequest {
     #[validate(
         required(message = "Le champ platform est requis"),
-        length(max = 50, message = "la plateforme doit faire maximum 50 caractères")
+        length(
+            max = 50,
+            min = 1,
+            message = "la plateforme doit faire maximum 50 caractères"
+        )
     )]
     pub platform: Option<String>,
 }

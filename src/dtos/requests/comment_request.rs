@@ -6,6 +6,7 @@ pub struct CommentRequest {
         required(message = "Le champ contenu est requis"),
         length(
             max = 10000,
+            min = 1,
             message = "Le contenu du commentaire ne peut pas dépasser 10 000 caractères.",
         )
     )]

@@ -6,7 +6,11 @@ use validator::Validate;
 pub struct MessageRequest {
     #[validate(
         required(message = "Le champ nom est requis"),
-        length(min = 5, message = "Le nom doit contenir au moins 5 caractères.")
+        length(
+            min = 5,
+            max = 200,
+            message = "Le nom doit contenir au moins 5 caractères."
+        )
     )]
     pub name: Option<String>,
 
@@ -21,7 +25,11 @@ pub struct MessageRequest {
 
     #[validate(
         required(message = "Le champ sujet est requis"),
-        length(max = 1500, message = "Le sujet ne doit pas dépasser 1500 caractères.")
+        length(
+            max = 1500,
+            min = 1,
+            message = "Le sujet ne doit pas dépasser 1500 caractères."
+        )
     )]
     pub subject: Option<String>,
 
@@ -29,6 +37,7 @@ pub struct MessageRequest {
         required(message = "Le champ message est requis"),
         length(
             max = 10000,
+            min = 1,
             message = "Le message ne doit pas dépasser 10000 caractères."
         )
     )]
