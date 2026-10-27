@@ -1,8 +1,6 @@
 use entities::users;
-use sea_orm::{DatabaseConnection, prelude::DateTime};
+use sea_orm::prelude::DateTime;
 use serde::Serialize;
-
-use crate::{errors::AppError, repositories::user_repositories};
 
 #[derive(Serialize)]
 pub struct UserResponse {

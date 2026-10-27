@@ -1,5 +1,5 @@
-use entities::{users, users_roles};
-use portfolio_api::{enums::user_role::UserRole, helpers::hash, repositories::user_repositories};
+use entities::users;
+use portfolio_api::helpers::hash;
 use sea_orm::{ActiveValue::Set, EntityTrait};
 use sea_orm_migration::prelude::*;
 
@@ -22,19 +22,15 @@ impl MigrationTrait for Migration {
         test_user.password = Set(hash::make("user@example.com".to_string()).unwrap());
         test_user.email_verified_at = Set(Some(chrono::Utc::now().naive_utc()));
         visitors.push(test_user);
-        let visitors_model = users::Entity::insert_many(visitors)
+        users::Entity::insert_many(visitors)
             .exec_with_returning(db)
             .await?;
-        for v in &visitors_model {
-            let _ = user_repositories::assign_role(v.id, UserRole::VISITOR, db).await;
-        }
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
         users::Entity::delete_many().exec(db).await?;
-        users_roles::Entity::delete_many().exec(db).await?;
         Ok(())
     }
 }

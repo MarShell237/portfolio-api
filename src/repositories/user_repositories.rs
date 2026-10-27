@@ -1,11 +1,11 @@
 use crate::{
     dtos::requests::register_request::RegisterRequestValidated, enums::user_role::UserRole,
-    errors::AppError, helpers::hash, repositories::user_repositories,
+    errors::AppError, helpers::hash,
 };
 use entities::users;
 use sea_orm::{
     ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseConnection, EntityTrait,
-    ModelTrait, PaginatorTrait, QueryFilter,
+    QueryFilter,
 };
 
 pub async fn create_user(

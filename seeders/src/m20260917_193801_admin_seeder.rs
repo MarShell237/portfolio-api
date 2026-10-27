@@ -1,5 +1,5 @@
-use entities::{users, users_roles};
-use portfolio_api::{enums::user_role::UserRole, helpers::hash, repositories::user_repositories};
+use entities::users;
+use portfolio_api::helpers::hash;
 use sea_orm::{
     ActiveModelTrait,
     ActiveValue::{NotSet, Set},
@@ -21,7 +21,7 @@ impl MigrationName for Migration {
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
-        let admin = users::ActiveModel {
+        users::ActiveModel {
             id: NotSet,
             picture: NotSet,
             name: Set(config::ADMIN_NAME.clone()),
@@ -29,20 +29,20 @@ impl MigrationTrait for Migration {
             phone: Set(config::ADMIN_PHONE.clone()),
             email_verified_at: Set(Some(chrono::Utc::now().naive_utc())),
             password: Set(hash::make(config::ADMIN_PASSWORD.clone()).unwrap()),
+            role: Set("ADMIN".to_string()),
             deleted_at: NotSet,
             created_at: NotSet,
             updated_at: NotSet,
-        };
-        let admin_model = admin.insert(db).await?;
+        }
+        .insert(db)
+        .await?;
 
-        let _ = user_repositories::assign_role(admin_model.id, UserRole::ADMIN, db).await;
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
         users::Entity::delete_many().exec(db).await?;
-        users_roles::Entity::delete_many().exec(db).await?;
         Ok(())
     }
 }

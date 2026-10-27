@@ -29,7 +29,7 @@ pub fn create() -> users::ActiveModel {
         phone: Set(user_factory.phone),
         email_verified_at: NotSet,
         password: Set(hash::make("password".to_string()).unwrap()),
-        role: Set("VISITOR"),
+        role: Set("VISITOR".to_string()),
         deleted_at: NotSet,
         created_at: NotSet,
         updated_at: NotSet,
