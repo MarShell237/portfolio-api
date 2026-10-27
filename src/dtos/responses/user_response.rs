@@ -18,16 +18,9 @@ pub struct UserResponse {
     pub role: String,
 }
 
-impl UserResponse {
-    pub async fn from_user(
-        user: users::Model,
-        db_pool: &DatabaseConnection,
-    ) -> Result<Self, AppError>
-// where
-        // C: ConnectionTrait,
-    {
-        let role = user_repositories::get_role(user.id, db_pool).await?;
-        Ok(Self {
+impl From<users::Model> for UserResponse {
+    fn from(user: users::Model) -> Self {
+        Self {
             id: user.id,
             picture: user.picture,
             name: user.name,
@@ -37,7 +30,7 @@ impl UserResponse {
             deleted_at: user.deleted_at,
             created_at: user.created_at,
             updated_at: user.updated_at,
-            role: role.name,
-        })
+            role: user.role,
+        }
     }
 }

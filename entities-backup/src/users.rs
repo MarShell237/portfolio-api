@@ -16,6 +16,7 @@ pub struct Model {
     pub phone: String,
     pub email_verified_at: Option<DateTime>,
     pub password: String,
+    pub role: String,
     pub deleted_at: Option<DateTime>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
@@ -25,10 +26,6 @@ pub struct Model {
     pub likes: HasMany<super::likes::Entity>,
     #[sea_orm(has_many)]
     pub shares: HasMany<super::shares::Entity>,
-    #[sea_orm(has_many, via = "users_permissions")]
-    pub permissions: HasMany<super::permissions::Entity>,
-    #[sea_orm(has_many, via = "users_roles")]
-    pub roles: HasMany<super::roles::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

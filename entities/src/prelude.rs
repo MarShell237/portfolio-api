@@ -3,15 +3,10 @@
 pub use super::comments::Entity as Comments;
 pub use super::likes::Entity as Likes;
 pub use super::messages::Entity as Messages;
-pub use super::permissions::Entity as Permissions;
 pub use super::posts::Entity as Posts;
 pub use super::posts_tags::Entity as PostsTags;
 pub use super::projects::Entity as Projects;
 pub use super::projects_tags::Entity as ProjectsTags;
-pub use super::roles::Entity as Roles;
-pub use super::roles_permissions::Entity as RolesPermissions;
 pub use super::shares::Entity as Shares;
 pub use super::tags::Entity as Tags;
 pub use super::users::Entity as Users;
-pub use super::users_permissions::Entity as UsersPermissions;
-pub use super::users_roles::Entity as UsersRoles;

@@ -1,26 +1,35 @@
 use crate::{
-    dtos::{forms::register_form::RegisterForm, requests::login_request::{LoginRequest, LoginRequestValidated}, responses::user_response::UserResponse}, helpers::{api_response::ApiResponse, hash}, repositories::user_repositories,
+    dtos::{
+        forms::register_form::RegisterForm,
+        requests::login_request::{LoginRequest, LoginRequestValidated},
+        responses::user_response::UserResponse,
+    },
+    helpers::{api_response::ApiResponse, hash},
+    repositories::user_repositories,
 };
 use actix_identity::Identity;
 use actix_multipart::form::MultipartForm;
-use actix_web::{HttpMessage, HttpRequest, Responder, web::{Data, ReqData}};
+use actix_web::{
+    HttpMessage, HttpRequest, Responder,
+    web::{Data, ReqData},
+};
 use actix_web_validator::Json;
 use entities::users;
 
-use crate::{
-    errors::AppError,
-    helpers::app_state::AppState,
-};
+use crate::{errors::AppError, helpers::app_state::AppState};
 
 pub async fn register(
     app_state: Data<AppState>,
     http_request: HttpRequest,
     request: MultipartForm<RegisterForm>,
 ) -> Result<impl Responder, AppError> {
-    let (register_request_validated, picture) = request.into_inner().validated_and_split(&app_state.db_pool).await?; 
+    let (register_request_validated, picture) = request
+        .into_inner()
+        .validated_and_split(&app_state.db_pool)
+        .await?;
     let user: users::Model =
         user_repositories::create_user(register_request_validated, &app_state.db_pool).await?;
-    let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
+    let user_response = UserResponse::from(user);
     Identity::login(
         &http_request.extensions(),
         user_response.id.clone().to_string().into(),
@@ -55,7 +64,7 @@ pub async fn login(
     )
     .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
 
-    let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
+    let user_response = UserResponse::from(user);
     Ok(ApiResponse::ok(
         format!(
             "Connexion réussie. Bienvenue, {}, sur votre espace utilisateur.",
@@ -65,16 +74,23 @@ pub async fn login(
     ))
 }
 
-pub async fn logout(user: Option<Identity>) -> Result<impl Responder, AppError>{
-    let session = user.ok_or_else(|| {
-        AppError::unauthorized("Authentification requise.")
-    })?;
+pub async fn logout(user: Option<Identity>) -> Result<impl Responder, AppError> {
+    let session = user.ok_or_else(|| AppError::unauthorized("Authentification requise."))?;
     session.logout();
-    Ok(ApiResponse::ok("Vous avez été déconnecté de votre session avec succès.", None::<()>))
+    Ok(ApiResponse::ok(
+        "Vous avez été déconnecté de votre session avec succès.",
+        None::<()>,
+    ))
 }
 
-pub async fn connected(user_id: ReqData<i64>, app_state: Data<AppState>) -> Result<impl Responder, AppError> {
+pub async fn connected(
+    user_id: ReqData<i64>,
+    app_state: Data<AppState>,
+) -> Result<impl Responder, AppError> {
     let user = user_repositories::find_user_by_id(*user_id, &app_state.db_pool).await?;
-    let user_response = UserResponse::from_user(user, &app_state.db_pool).await?;
-    Ok(ApiResponse::ok("Utilisateur connecté récupéré avec succès.", Some(user_response)))
+    let user_response = UserResponse::from(user);
+    Ok(ApiResponse::ok(
+        "Utilisateur connecté récupéré avec succès.",
+        Some(user_response),
+    ))
 }
