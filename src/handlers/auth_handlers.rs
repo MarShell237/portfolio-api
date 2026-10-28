@@ -32,7 +32,7 @@ pub async fn register(
     let user_response = UserResponse::from(user);
     Identity::login(
         &http_request.extensions(),
-        user_response.id.clone().to_string().into(),
+        user_response.id.clone().to_string(),
     )
     .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
     Ok(ApiResponse::created(
@@ -60,7 +60,7 @@ pub async fn login(
 
     Identity::login(
         &http_request.extensions(),
-        user.id.clone().to_string().into(),
+        user.id.clone().to_string(),
     )
     .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
 

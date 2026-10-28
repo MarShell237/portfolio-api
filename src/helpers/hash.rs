@@ -4,7 +4,7 @@ use crate::errors::AppError;
 
 pub fn make(password: String) -> Result<String, AppError> {
     Ok(Argon2::default()
-        .hash_password(&password.as_bytes())
+        .hash_password(password.as_bytes())
         .map_err(|e| AppError::internal(format!("Erreur de hachage: {e}")))?
         .to_string())
 }
