@@ -14,9 +14,9 @@ pub async fn create_user(
 ) -> Result<users::Model, AppError> {
     let role_str: &'static str = UserRole::VISITOR.into();
     let user = users::ActiveModel {
-        name: Set(register_request.name),
+        name: Set(Some(register_request.name)),
         email: Set(register_request.email),
-        phone: Set(register_request.phone),
+        phone: Set(Some(register_request.phone)),
         password: Set(hash::make(register_request.password)?),
         role: Set(role_str.to_string()),
         ..Default::default()

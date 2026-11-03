@@ -9,11 +9,11 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i64,
     pub picture: Option<String>,
-    pub name: String,
+    pub name: Option<String>,
     #[sea_orm(unique)]
     pub email: String,
     #[sea_orm(unique)]
-    pub phone: String,
+    pub phone: Option<String>,
     pub email_verified_at: Option<DateTime>,
     pub password: String,
     pub role: String,
