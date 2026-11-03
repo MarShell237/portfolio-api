@@ -24,7 +24,7 @@ pub async fn show(
         let deleted_user = UserResponse {
             id: -user.id,
             picture: None,
-            name: Some("Utilisateur supprimé".to_string()),
+            name: "Utilisateur supprimé".to_string(),
             email: "utilisateur@supprimer.com".to_string(),
             phone: user.phone,
             email_verified_at: None,
@@ -54,7 +54,7 @@ pub async fn update(
     let user = user_repositories::find_user_by_id(*user_id, &app_state.db_pool).await?;
     let mut user_active_model: users::ActiveModel = user.into();
     let (update_user_request_validated, picture) = request.into_inner().validate_and_split()?;
-    user_active_model.name = Set(Some(update_user_request_validated.name));
+    user_active_model.name = Set(update_user_request_validated.name);
     let new_user = user_active_model
         .update(&app_state.db_pool)
         .await

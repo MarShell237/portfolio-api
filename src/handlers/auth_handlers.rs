@@ -37,8 +37,8 @@ pub async fn register(
     .map_err(|e| AppError::internal(format!("Échec de création de la session: {e}")))?;
     Ok(ApiResponse::created(
         format!(
-            "Félicitations ! Votre compte a été créé avec succès. Un code de vérification a été envoyé à l’adresse email {}. Veuillez saisir ce code pour activer votre compte. Si vous ne recevez pas l’email dans quelques minutes, vérifiez votre dossier spam ou demandez un nouveau code de vérification.",
-            user_response.email
+            "Félicitations, {}! Votre compte a été créé avec succès. Un code de vérification a été envoyé à l’adresse email {}. Veuillez saisir ce code pour activer votre compte. Si vous ne recevez pas l’email dans quelques minutes, vérifiez votre dossier spam ou demandez un nouveau code de vérification.",
+            user_response.name, user_response.email
         ),
         Some(user_response),
     ))
@@ -68,7 +68,7 @@ pub async fn login(
     Ok(ApiResponse::ok(
         format!(
             "Connexion réussie. Bienvenue, {}, sur votre espace utilisateur.",
-            user_response.name.as_deref().unwrap_or("Utilisateur")
+            user_response.name
         ),
         Some(user_response),
     ))

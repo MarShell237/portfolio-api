@@ -6,7 +6,7 @@ use serde::Serialize;
 pub struct UserResponse {
     pub id: i64,
     pub picture: Option<String>,
-    pub name: Option<String>,
+    pub name: String,
     pub email: String,
     pub phone: Option<String>,
     pub email_verified_at: Option<DateTime>,

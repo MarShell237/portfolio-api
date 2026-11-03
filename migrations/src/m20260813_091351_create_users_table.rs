@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(big_integer("id").auto_increment().primary_key())
                     .col(string("picture").null())
-                    .col(string("name").null())
+                    .col(string("name"))
                     .col(string("email").unique_key())
                     .col(string("phone").unique_key().null())
                     .col(timestamp("email_verified_at").null())
